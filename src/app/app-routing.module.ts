@@ -3,9 +3,22 @@ import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
   {
+    path: 'login',
+    loadChildren: () => import('./auth/login.module').then(m => m.LoginPageModule)
+  },
+  {
+    path: 'member-dashboard',
+    loadChildren: () => import('./member-dashboard/member-dashboard.module').then(m => m.MemberDashboardPageModule)
+  },
+  {
+    path: 'member-dashboard-history',
+    loadChildren: () => import('./member-dashboard-history/member-dashboard-history.module').then(m => m.MemberDashboardHistoryPageModule)
+  },
+  {
     path: '',
-    loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsPageModule)
-  }
+    redirectTo: 'login',
+    pathMatch: 'full'
+  },
 ];
 @NgModule({
   imports: [

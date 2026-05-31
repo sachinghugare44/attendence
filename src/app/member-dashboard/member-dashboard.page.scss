@@ -1,0 +1,461 @@
+.custom-header {
+  --background: #fff;
+  border-bottom: 1px solid #ececec
+}
+
+ion-toolbar {
+  --background: #fff;
+  --min-height: 70px;
+  padding: 0 20px
+}
+
+.navbar-container,
+.left-section,
+.right-section,
+.profile-section,
+.logout-btn {
+  display: flex;
+  align-items: center
+}
+
+.navbar-container {
+  justify-content: space-between;
+  width: 100%
+}
+
+.left-section {
+  gap: 10px
+}
+
+.right-section {
+  gap: 18px
+}
+
+.profile-section {
+  gap: 8px;
+  color: #444;
+  font-size: 14px;
+  font-weight: 500
+}
+
+.logo-box {
+  width: 16px;
+  height: 16px;
+  background: #69d34d;
+  border-radius: 2px
+}
+
+.logo-text {
+  font-size: 28px;
+  font-weight: 700;
+  color: #222
+}
+
+.divider {
+  width: 1px;
+  height: 28px;
+  background: #e0e0e0
+}
+
+.profile-section ion-icon,
+.right-section ion-icon {
+  font-size: 20px;
+  color: #777
+}
+
+.profile-img {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: skyblue;
+}
+
+.logout-btn {
+  gap: 6px;
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 16px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer
+}
+
+.logout-btn ion-icon {
+  color: #fff;
+  font-size: 18px
+}
+
+.months-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  padding: 16px
+}
+
+.confetti-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  overflow: hidden
+}
+
+.confetti-piece {
+  position: absolute;
+  top: -14px;
+  width: 12px;
+  height: 18px;
+  border-radius: 3px;
+  opacity: .95;
+  animation: confetti-fall 1.9s ease-out forwards
+}
+
+.month-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  // min-height: 214px;
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 18px;
+  background: linear-gradient(180deg, #101828 0%, #0f172a 100%);
+  cursor: pointer;
+  box-shadow: 0 16px 32px rgba(15, 23, 42, .18);
+  transition: transform .2s, box-shadow .2s, border-color .2s
+}
+
+.month-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 38px rgba(15, 23, 42, .24);
+  border-color: rgba(96, 165, 250, .35)
+}
+
+.month-card-disabled {
+  opacity: .58;
+  filter: grayscale(.35);
+  cursor: not-allowed;
+  pointer-events: none
+}
+
+.month-image {
+  width: 100%;
+  height: 128px
+}
+
+.month-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: scale-down
+}
+
+.month-label {
+  color: #fff;
+  font-size: 1.15rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .04em
+}
+
+.month-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px
+}
+
+.month-action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: auto
+}
+
+.month-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 999px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  cursor: pointer;
+  transition: transform .18s ease, filter .18s ease, box-shadow .18s ease
+}
+
+.month-action-btn ion-icon {
+  font-size: 16px
+}
+
+.month-action-btn.primary {
+  background: linear-gradient(135deg, #2563eb 0%, #06b6d4 100%);
+  box-shadow: 0 10px 20px rgba(37, 99, 235, .28)
+}
+
+.month-action-btn.secondary {
+  background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
+  box-shadow: 0 10px 20px rgba(15, 23, 42, .24)
+}
+
+.month-action-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.06)
+}
+
+.month-lock-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-start;
+  margin-top: 4px;
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, .16);
+  color: #cbd5e1;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .03em;
+  text-transform: uppercase
+}
+
+.modal-header ion-toolbar {
+  --min-height: 60px;
+  border-bottom: 1px solid #edf0f4
+}
+
+.attendance-modal-content {
+  --background: #f6f8fb
+}
+
+.calendar-panel,
+.status-panel {
+  width: min(520px, calc(100% - 28px));
+  margin: 18px auto;
+  padding: 18px;
+  border: 1px solid #e6ebf2;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 12px 28px rgba(31, 43, 68, .08)
+}
+
+.modal-title-block {
+  margin-bottom: 16px
+}
+
+.status-title-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px
+}
+
+.status-title-copy {
+  flex: 1
+}
+
+.calendar-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px
+}
+
+.selection-mode-toggle {
+  flex: 0 0 186px;
+  max-width: 186px
+}
+
+.modal-title-block h2 {
+  margin: 0;
+  color: #1e293b;
+  font-size: 22px;
+  font-weight: 700
+}
+
+.modal-title-block p {
+  margin: 6px 0 0;
+  color: #64748b;
+  font-size: 14px
+}
+
+.calendar-panel ion-datetime {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  border: 1px solid #edf0f4;
+  border-radius: 8px
+}
+
+.multi-date-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 14px
+}
+
+.selected-dates-list {
+  margin-top: 16px;
+  padding: 12px;
+  border: 1px solid #dbe4f0;
+  border-radius: 8px;
+  background: #f8fafc
+}
+
+.selected-date-chip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #fff;
+  color: #1e293b;
+  font-size: 14px;
+  border: 1px solid #e2e8f0
+}
+
+.calendar-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px
+}
+
+.back-calendar-btn {
+  margin: -4px 0 0 -10px;
+  --color: #2563eb;
+  --padding-start: 6px;
+  --padding-end: 6px;
+  --border-radius: 999px;
+  min-height: 36px
+}
+
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 16px
+}
+
+.status-option {
+  min-height: 88px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid #dbe4f0;
+  border-radius: 8px;
+  background: #fff;
+  color: #334155;
+  font-weight: 700;
+  cursor: pointer
+}
+
+.status-option ion-icon {
+  color: #64748b;
+  font-size: 26px
+}
+
+.status-option.active {
+  border-color: #2563eb;
+  background: #eff6ff;
+  color: #1d4ed8;
+  box-shadow: inset 0 0 0 1px #2563eb
+}
+
+.status-option.active ion-icon {
+  color: #2563eb
+}
+
+.remark-field {
+  --background: #f8fafc;
+  --border-radius: 8px;
+  margin-bottom: 16px;
+  border: 1px solid #dbe4f0;
+  border-radius: 8px
+}
+
+.submit-status-btn {
+  --background: #2563eb;
+  --border-radius: 8px;
+  min-height: 46px
+}
+
+.submit-status-btn ion-spinner {
+  width: 22px;
+  height: 22px
+}
+
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(-18px) rotate(0deg);
+    opacity: 0
+  }
+
+  12% {
+    opacity: 1
+  }
+
+  100% {
+    transform: translateY(110vh) rotate(720deg);
+    opacity: 0
+  }
+}
+
+@media (max-width:768px) {
+  .logo-text {
+    font-size: 22px
+  }
+
+  .right-section {
+    gap: 12px
+  }
+
+  .profile-section span,
+  .divider {
+    display: none
+  }
+
+  .months-container {
+    grid-template-columns: repeat(2, 1fr)
+  }
+}
+
+@media (max-width:520px) {
+  ion-toolbar {
+    padding: 0 10px
+  }
+
+  .status-grid {
+    grid-template-columns: 1fr
+  }
+
+  .calendar-actions {
+    flex-direction: column
+  }
+
+  .calendar-header-row,
+  .multi-date-actions {
+    grid-template-columns: 1fr;
+    flex-direction: column
+  }
+
+  .selection-mode-toggle {
+    width: 100%;
+    max-width: 100%
+  }
+
+  .calendar-panel,
+  .status-panel {
+    padding: 14px
+  }
+}

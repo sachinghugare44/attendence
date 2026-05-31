@@ -1,0 +1,65 @@
+
+<ion-content>
+  <div class="content">
+<div class="auth-outer-center">
+  <ion-card class="auth-card">
+    <div class="auth-card-inner">
+      <div class="auth-card-image">
+        <img src="assets/home/image.png" alt="Login Illustration" />
+      </div>
+      <div class="auth-card-form">
+        <ion-card-header>
+          <ion-card-title>{{ isLogin ? 'Login' : 'Register' }}</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-text color="danger" *ngIf="loginError && isLogin" class="error-message">{{ loginError }}</ion-text>
+          <ion-text color="danger" *ngIf="registerError && !isLogin" class="error-message">{{ registerError }}</ion-text>
+          <ion-text color="success" *ngIf="successMessage" class="success-message">{{ successMessage }}</ion-text>
+          <!-- Login Form -->
+          <form *ngIf="isLogin" [formGroup]="loginForm" (ngSubmit)="onLogin()">
+            <ion-item>
+              <!-- <ion-label position="floating">Username</ion-label> -->
+              <ion-input formControlName="username" type="text" placeholder="Enter Username"></ion-input>
+            </ion-item>
+            <ion-item>
+              <!-- <ion-label position="floating">Password</ion-label> -->
+              <ion-input formControlName="password" type="password" placeholder="Enter Password"></ion-input>
+            </ion-item>
+            <ion-button expand="block" type="submit" [disabled]="loginForm.invalid">
+              Login
+            </ion-button>
+          </form>
+          <!-- Register Form -->
+          <form *ngIf="!isLogin" [formGroup]="registerForm" (ngSubmit)="onRegister()">
+            <ion-item>
+              <!-- <ion-label position="floating">Name</ion-label> -->
+              <ion-input formControlName="name" type="text" placeholder="Enter Name"></ion-input>
+            </ion-item>
+            <ion-item>
+              <!-- <ion-label position="floating">Mobile Number</ion-label> -->
+              <ion-input formControlName="mobile" type="tel" maxlength="10" placeholder="Enter Mobile Number"></ion-input>
+            </ion-item>
+            <ion-item>
+              <!-- <ion-label position="floating">Email</ion-label> -->
+              <ion-input formControlName="email" type="email" placeholder="Enter Email"></ion-input>
+            </ion-item>
+            <ion-item>
+              <!-- <ion-label position="floating">Password</ion-label> -->
+              <ion-input formControlName="password" type="password" placeholder="Enter Password"></ion-input>
+            </ion-item>
+            <ion-button expand="block" type="submit" [disabled]="registerForm.invalid">
+              Register
+            </ion-button>
+          </form>
+          <div class="toggle-link">
+            <a (click)="toggleMode()">
+              {{ isLogin ? 'New user? Register here' : 'Already have an account? Login' }}
+            </a>
+          </div>
+        </ion-card-content>
+      </div>
+    </div>
+  </ion-card>
+</div>
+</div>
+</ion-content>
