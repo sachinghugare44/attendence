@@ -38,12 +38,15 @@ export class MemberDashboardPage implements OnInit {
   modalStep: 'calendar' | 'status' = 'calendar';
   responseData: any;
   private confettiTimer: number | null = null;
+  monthold = false;
 
-  statusOptions = [
-    { label: 'Present', value: 'P', icon: 'checkmark-circle-outline' },
-    { label: 'Leave', value: 'L', icon: 'calendar-clear-outline' },
-    { label: 'WFH', value: 'WFH', icon: 'home-outline' },
-    { label: 'Holiday', value: 'H', icon: 'sunny-outline' }
+ statusOptions = [
+    { label: 'WEEKOFF', value: 'WO', icon: 'bed-outline' },
+    { label: 'DESIGNATED HOLIDAY', value: 'DH', icon: 'calendar-clear-outline' },
+    { label: 'WFH', value: 'WFH', icon: 'laptop-outline' },
+    { label: 'LEAVE', value: 'L', icon: 'airplane-outline' },
+    { label: 'PRESENT', value: 'G', icon: 'checkmark-circle-outline' },
+    { label: 'OTHERS', value: 'O', icon: 'ellipsis-horizontal-circle-outline' },
   ];
 
   monthsk: any[] = [
@@ -295,8 +298,10 @@ export class MemberDashboardPage implements OnInit {
   }
 
   isMonthAccessible(monthIndex: number): boolean {
-    return monthIndex <= this.currentMonthIndex;
+    return monthIndex === this.currentMonthIndex;
   }
+
+
 
   private resetSelection() {
     this.selectedDay = null;

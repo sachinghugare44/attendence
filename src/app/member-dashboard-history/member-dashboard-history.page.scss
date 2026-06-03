@@ -249,7 +249,7 @@
   font-size: 12px
 }
 
-.status-p {
+.status-g {
   --a: #ecfdf5;
   --b: #86efac;
   --c: #16a34a
@@ -267,11 +267,25 @@
   --c: #ea580c
 }
 
-.status-h {
+.status-dh {
   --a: #fefce8;
   --b: #facc15;
   --c: #ca8a04
 }
+
+.status-o {
+   --a: #fdf2f8;
+  --b: #f9a8d4;
+  --c: #db2777;
+}
+
+.status-wo {
+  --a: #f7f3f0;
+  --b: #c8a27a;
+  --c: #5c4033;
+}
+
+
 
 .edit-panel {
   margin: 18px auto;

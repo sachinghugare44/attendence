@@ -25,10 +25,12 @@ export class MemberDashboardHistoryPage implements OnInit {
   isConfettiVisible = false;
 
   statusSummary = [
-    { label: 'Present', status: 'P', count: 0 },
+    { label: 'WEEKOFF', status: 'WO', count: 0 },
+    { label: 'DESIGNATED HOLIDAY', status: 'DH', count: 0 },
+    { label: 'LEAVE', status: 'L', count: 0 },
+    { label: 'PRESENT', status: 'G', count: 0 },
     { label: 'WFH', status: 'WFH', count: 0 },
-    { label: 'Leave', status: 'L', count: 0 },
-    { label: 'Holiday', status: 'H', count: 0 }
+    { label: 'OTHERS', status: 'O', count: 0 },
   ];
 
   monthOptions = [
@@ -46,11 +48,13 @@ export class MemberDashboardHistoryPage implements OnInit {
     { value: 12, label: 'Dec', name: 'December' }
   ];
 
-  statusOptions = [
-    { label: 'Present', value: 'P', icon: 'checkmark-circle-outline' },
-    { label: 'Leave', value: 'L', icon: 'calendar-clear-outline' },
-    { label: 'WFH', value: 'WFH', icon: 'home-outline' },
-    { label: 'Holiday', value: 'H', icon: 'sunny-outline' }
+statusOptions = [
+    { label: 'WEEKOFF', value: 'WO', icon: 'bed-outline' },
+    { label: 'DESIGNATED HOLIDAY', value: 'DH', icon: 'calendar-clear-outline' },
+    { label: 'WFH', value: 'WFH', icon: 'laptop-outline' },
+    { label: 'LEAVE', value: 'L', icon: 'airplane-outline' },
+    { label: 'PRESENT', value: 'G', icon: 'checkmark-circle-outline' },
+    { label: 'OTHERS', value: 'O', icon: 'ellipsis-horizontal-circle-outline' },
   ];
 
   constructor(
@@ -208,10 +212,12 @@ export class MemberDashboardHistoryPage implements OnInit {
 
   getStatusLabel(status: string) {
     const statusMap: Record<string, string> = {
-      P: 'Present',
+      G: 'Present',
       WFH: 'Work From Home',
       L: 'Leave',
-      H: 'Holiday'
+      DH: 'Designated Holiday',
+      WO: 'Weekend',
+      O: 'Others'
     };
     return statusMap[status] || status;
   }
@@ -259,4 +265,5 @@ export class MemberDashboardHistoryPage implements OnInit {
       this.confettiTimer = null;
     }, 3400);
   }
+  
 }
