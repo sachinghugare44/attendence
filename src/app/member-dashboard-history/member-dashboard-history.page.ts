@@ -10,8 +10,12 @@ import { ToastController } from '@ionic/angular';
   standalone: false
 })
 export class MemberDashboardHistoryPage implements OnInit {
+  currentMonthIndex = new Date().getMonth() + 1;
+  currentUserMobile = localStorage.getItem('mobile') || '';
   selectedMonth = new Date().getMonth() + 1;
   selectedYear = new Date().getFullYear();
+  selectedUserMobile = this.currentUserMobile;
+  selectedUserName = 'Myself';
   isHistoryLoading = false;
   flippedCardId: string | null = null;
   isEditModalOpen = false;
@@ -20,18 +24,22 @@ export class MemberDashboardHistoryPage implements OnInit {
   editStatus = '';
   editRemark = '';
   responseData: any;
+  userOptions: Array<{ name: string; mobile: string }> = [];
   attendanceHistory: any[] = [];
   private confettiTimer: number | null = null;
   isConfettiVisible = false;
-
-  statusSummary = [
+  usertype:any
+  accessRecords: any;
+  showfinalbutton=false;
+  private readonly statusSummaryBase = [
     { label: 'WEEKOFF', status: 'WO', count: 0 },
-    { label: 'DESIGNATED HOLIDAY', status: 'DH', count: 0 },
+    { label: 'D.HOLIDAY', status: 'DH', count: 0 },
     { label: 'LEAVE', status: 'L', count: 0 },
     { label: 'PRESENT', status: 'G', count: 0 },
     { label: 'WFH', status: 'WFH', count: 0 },
     { label: 'OTHERS', status: 'O', count: 0 },
   ];
+  statusSummary = [...this.statusSummaryBase];
 
   monthOptions = [
     { value: 1, label: 'Jan', name: 'January' },
@@ -50,7 +58,7 @@ export class MemberDashboardHistoryPage implements OnInit {
 
 statusOptions = [
     { label: 'WEEKOFF', value: 'WO', icon: 'bed-outline' },
-    { label: 'DESIGNATED HOLIDAY', value: 'DH', icon: 'calendar-clear-outline' },
+    { label: 'D.HOLIDAY', value: 'DH', icon: 'calendar-clear-outline' },
     { label: 'WFH', value: 'WFH', icon: 'laptop-outline' },
     { label: 'LEAVE', value: 'L', icon: 'airplane-outline' },
     { label: 'PRESENT', value: 'G', icon: 'checkmark-circle-outline' },
@@ -66,19 +74,86 @@ statusOptions = [
 
   ngOnInit() {
     this.getAllApiUSerByMobile();
+    this.getAllUsers();
+    this.usertype = localStorage.getItem('usertype');
+    console.log(this.usertype);
+    const mobile = localStorage.getItem('mobile');
+    const password = localStorage.getItem('name');
+
+    if (!mobile || !password) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    this.getFnalbuttonstatus();
+  
   }
 
   ionViewWillEnter() {
     const routeMonth = Number(this.activatedRoute.snapshot.queryParamMap.get('month'));
+    const routeMobile = this.activatedRoute.snapshot.queryParamMap.get('mobile');
+    const routeUserName = this.activatedRoute.snapshot.queryParamMap.get('userName');
     console.log('Route month:', routeMonth);
     this.selectedMonth = this.isValidMonth(routeMonth) ? routeMonth : this.selectedMonth;
+    if (routeMobile) {
+      this.selectedUserMobile = routeMobile;
+    }
+    if (routeUserName) {
+      this.selectedUserName = routeUserName;
+    }
     console.log('Selected month after validation:', this.selectedMonth);
     this.getUserAttendanceHistory();
+    this.getFnalbuttonstatus();
   }
 
   get selectedMonthName() {
     return this.monthOptions.find(month => month.value === this.selectedMonth)?.name || '';
   }
+
+  get isFinalSubmitEnabled(): boolean {
+  const today = new Date();
+  const selectedYear = this.selectedYear;
+  const selectedMonthIndex = this.selectedMonth;
+
+  const daysInSelectedMonth = new Date(
+    selectedYear,
+    selectedMonthIndex,
+    0
+  ).getDate();
+
+  const markedDays = new Set(
+    this.attendanceHistory
+      .map(item => {
+        const date = new Date(item.date);
+        return Number.isNaN(date.getTime()) ? null : date.getDate();
+      })
+      .filter((day): day is number => day !== null)
+  ).size;
+
+  // All days must be marked
+  const monthIsComplete = markedDays >= daysInSelectedMonth;
+
+  if (!monthIsComplete) {
+    return false;
+  }
+
+  // Already submitted => Disable button
+  if (this.accessRecords?.finalMonthSubmit === true) {
+    return false;
+  }
+
+  // Previous month
+  if (selectedMonthIndex < today.getMonth() + 1) {
+    return true;
+  }
+
+  // Future month
+  if (selectedMonthIndex > today.getMonth() + 1) {
+    return false;
+  }
+
+  // Current month: only allow on last day
+  return today.getDate() >= daysInSelectedMonth;
+}
 
   onMonthChange(event: any) {
     const month = Number(event?.detail?.value);
@@ -87,6 +162,19 @@ statusOptions = [
     }
 
     this.selectedMonth = month;
+    this.getUserAttendanceHistory();
+    this.getFnalbuttonstatus();
+    
+  }
+
+  onUserChange(event: any) {
+    const mobile = String(event?.detail?.value || '');
+    if (!mobile) {
+      return;
+    }
+
+    this.selectedUserMobile = mobile;
+    this.selectedUserName = this.userOptions.find(user => user.mobile === mobile)?.name || 'Selected Member';
     this.getUserAttendanceHistory();
   }
 
@@ -105,8 +193,30 @@ statusOptions = [
     });
   }
 
+  getAllUsers() {
+    this.apiService.getUsers().subscribe({
+      next: (response: any) => {
+        const users = response?.data || response || [];
+        this.userOptions = (users || [])
+          .map((user: any) => ({
+            name: user?.name,
+            mobile: String(user?.mobile || '')
+          }))
+          .filter((user: any) => user.name && user.mobile);
+
+        if (!this.selectedUserMobile && this.userOptions.length) {
+          this.selectedUserMobile = this.userOptions[0].mobile;
+          this.selectedUserName = this.userOptions[0].name;
+        } else if (this.selectedUserMobile) {
+          this.selectedUserName = this.userOptions.find(user => user.mobile === this.selectedUserMobile)?.name || this.selectedUserName;
+        }
+      },
+      error: error => console.error(error)
+    });
+  }
+
   getUserAttendanceHistory() {
-    const mobile = localStorage.getItem('mobile');
+    const mobile = this.selectedUserMobile || localStorage.getItem('mobile');
     if (!mobile) {
       return;
     }
@@ -215,7 +325,7 @@ statusOptions = [
       G: 'Present',
       WFH: 'Work From Home',
       L: 'Leave',
-      DH: 'Designated Holiday',
+      DH: 'D.Holiday',
       WO: 'Weekend',
       O: 'Others'
     };
@@ -228,7 +338,7 @@ statusOptions = [
   }
 
   private buildStatusSummary() {
-    this.statusSummary = this.statusSummary.map(item => ({
+    this.statusSummary = this.statusSummaryBase.map(item => ({
       ...item,
       count: this.attendanceHistory.filter(history => history.status === item.status).length
     }));
@@ -239,7 +349,35 @@ statusOptions = [
   }
 
   goBack() {
-    this.router.navigate(['/member-dashboard']);
+    if(localStorage.getItem('usertype') === '2'){
+      this.router.navigate(['/admin-dashboard']);
+    }
+    else {
+      this.router.navigate(['/member-dashboard']);
+    }
+  }
+
+  submitFinalMonth() {
+    if (!this.isFinalSubmitEnabled) {
+      return;
+    }
+    const paload = {
+    userMobile: localStorage.getItem('mobile'),
+    year: 2026,
+    month: this.selectedMonth,
+    finalMonthSubmit: true
+}
+    this.apiService.submitLeaveRequest(paload).subscribe({
+    next: response => {
+    this.presentToast('Month submitted successfully!', 'primary');
+    console.log('Final month submit response:', response);
+  },
+  error: error => {
+    console.error('Error submitting final month:', error);
+    this.presentToast('Failed to submit month. Please try again.', 'danger');
+  }
+});
+    console.log('Final month submit should call backend here');
   }
   private async presentToast(message: string, color: 'success' | 'danger' | 'primary') {
     const toast = await this.toastController.create({
@@ -266,4 +404,17 @@ statusOptions = [
     }, 3400);
   }
   
+  getFnalbuttonstatus(){
+      this.apiService.getAdminAccessRecord(this.currentUserMobile, this.selectedYear, this.selectedMonth).subscribe({
+      next: (response: any) => {
+        this.accessRecords = response?.data;
+        this.showfinalbutton  = this.accessRecords.finalMonthSubmit || false;
+        console.log('Admin access records:', this.showfinalbutton);
+      }
+    });
+  }
+
+   isMonthAccessible(monthIndex: number): boolean {
+    return monthIndex === this.currentMonthIndex;
+  }
 }

@@ -1,0 +1,122 @@
+<ion-header class="custom-header">
+  <ion-toolbar>
+
+    <!-- Left Logo -->
+    <div class="navbar-container">
+
+      <div class="left-section">
+        <div class="logo-box"></div>
+        <span class="logo-text">Attendance</span>
+      </div>
+
+      <!-- Right Section -->
+      <div class="right-section">
+
+        <!-- <ion-icon name="search-outline"></ion-icon>
+
+        <ion-icon name="cart-outline"></ion-icon>
+
+        <ion-icon name="stats-chart-outline"></ion-icon>
+
+        <div class="notification-wrapper">
+          <ion-icon name="notifications-outline"></ion-icon>
+          <span class="dot"></span>
+        </div> -->
+
+        <!-- Divider -->
+        <div class="divider"></div>
+
+        <!-- Language -->
+        
+
+        <!-- Profile -->
+        <div class="profile-section">
+          <!-- <img
+            src="https://i.pravatar.cc/100"
+            alt="profile"
+            class="profile-img"
+          /> -->
+          <ion-icon class="profile-img" name="person-circle-outline"></ion-icon>
+
+          <span >{{responseData?.name | uppercase}}</span>
+
+          <!-- <ion-icon name="chevron-down-outline"></ion-icon> -->
+        </div>
+
+         <button class="logout-btn" (click)="logout()">
+    <ion-icon name="log-out-outline"></ion-icon>
+    <span>Logout</span>
+  </button>
+
+
+
+      </div>
+
+    </div>
+
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="admin-content">
+  <section class="hero-panel">
+    <div>
+      <ion-row>
+        <ion-col size="6">
+                        <p class="eyebrow">Admin Control Center</p>
+
+        </ion-col>
+         <ion-col size="6" style="text-align: right;">
+                        <u><p style=" margin: 0 0 8px; color: brown; cursor: pointer; letter-spacing: .08em; text-transform: uppercase;  " (click)="openRoute('/member-dashboard')">Mark Own Attendance</p></u>
+
+        </ion-col>
+      </ion-row>
+     
+      <!-- <h1>Manage attendance, leave counts, and team visibility from one place.</h1> -->
+      <!-- <p class="hero-copy">
+        Quickly open member details, monthly leave summaries, and the live attendance history view.
+      </p> -->
+      <!-- <ion-button  fill="clear" class="mark-attenence" (click)="openRoute('/member-dashboard')">Mark Own Attendance</ion-button> -->
+    </div>
+  </section>
+
+  <section class="dashboard-grid">
+    <button
+      type="button"
+      class="action-card"
+      *ngFor="let action of quickActions"
+      [ngClass]="action.accent"
+      (click)="openRoute(action.route)"
+    >
+      <div class="action-icon">
+        <ion-icon [name]="action.icon"></ion-icon>
+      </div>
+      <div class="action-copy">
+        <h3>{{ action.title }}</h3>
+        <p>{{ action.description }}</p>
+      </div>
+      <ion-icon class="chevron" name="chevron-forward-outline"></ion-icon>
+    </button>
+  </section>
+
+  <!-- <section class="activity-panel">
+    <div class="panel-heading">
+      <div>
+        <p class="eyebrow">Recent Team Activity</p>
+        <h2>Latest updates from the team</h2>
+      </div>
+    </div>
+
+    <div class="activity-list">
+      <article class="activity-item" *ngFor="let item of recentActivity">
+        <div class="activity-icon" [class.updated]="item.state === 'updated'" [class.pending]="item.state === 'pending'">
+          <ion-icon [name]="getActivityIcon(item.state)"></ion-icon>
+        </div>
+        <div class="activity-copy">
+          <h3>{{ item.name }}</h3>
+          <p>{{ item.status }}</p>
+        </div>
+        <span class="activity-time">{{ item.time }}</span>
+      </article>
+    </div>
+  </section> -->
+</ion-content>

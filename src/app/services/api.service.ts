@@ -47,7 +47,15 @@ export class ApiService {
     return this.http.get(`${this.baseUrl}/attendance/history/${mobile}/${year}/${month}`);
   }
 
+  getAdminAccessRecord(mobile: string, year: number, month: number) {
+    return this.http.get(`${this.baseUrl}/admin-access/${mobile}/${year}/${month}`);
+  }
+
   createAttendance(data: any) {
     return this.http.post(`${this.baseUrl}/attendance/mark`, data);
+  }
+
+  submitLeaveRequest(data: any) {
+    return this.http.post(`${this.baseUrl}/admin-access`, data);
   }
 }

@@ -6,7 +6,7 @@
 
       <div class="left-section">
         <div class="logo-box"></div>
-        <span class="logo-text">Attendence</span>
+        <span class="logo-text">Attendance</span>
       </div>
 
       <!-- Right Section -->
@@ -87,7 +87,7 @@
         </ion-button>
         <div>
           <h2>Status Summary</h2>
-          <p>{{ selectedMonthName }} {{ selectedYear }}</p>
+          <p>{{ selectedMonthName }} {{ selectedYear }} · {{ selectedUserName }}</p>
         </div>
       </div>
 
@@ -105,6 +105,38 @@
           </ion-select-option>
         </ion-select>
       </ion-item>
+
+      <ion-item lines="none" *ngIf="usertype === '2'" class="month-select-card">
+        <ion-icon name="person-outline" slot="start"></ion-icon>
+        <ion-select
+          interface="popover"
+          label="User"
+          label-placement="stacked"
+          [value]="selectedUserMobile"
+          (ionChange)="onUserChange($event)"
+        >
+          <ion-select-option [value]="currentUserMobile">Myself</ion-select-option>
+          <ion-select-option *ngFor="let user of userOptions" [value]="user.mobile">
+            {{ user.name }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+    </div>
+
+    <div class="final-submit-strip" *ngIf="usertype == 1">
+      <div class="final-submit-copy">
+        <h3>Final Month Submit</h3>
+        <p>Enable this only when the selected month is fully marked and ready for monthly closure.</p>
+
+      </div>
+      <ion-button *ngIf="showfinalbutton === false"
+        class="final-submit-btn"
+        expand="block"
+        [disabled]="!isFinalSubmitEnabled"
+        (click)="submitFinalMonth()"
+      >
+        Final Submit Month
+      </ion-button>
     </div>
 
     <div class="summary-grid">
@@ -144,7 +176,7 @@
     >
       <div class="date-card-inner">
         <div class="date-card-face date-card-front">
-          <button type="button" class="edit-card-btn" (click)="openEditModal(item, $event)">
+          <button [disabled]="!isMonthAccessible(selectedMonth)" type="button" class="edit-card-btn" (click)="openEditModal(item, $event)">
             <ion-icon name="create-outline"></ion-icon>
           </button>
 

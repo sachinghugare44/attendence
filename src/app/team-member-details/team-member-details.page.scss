@@ -1,0 +1,272 @@
+.custom-header {
+    --background: #fff;
+    border-bottom: 1px solid #ececec
+}
+
+ion-toolbar {
+    --background: #fff;
+    --min-height: 70px;
+    padding: 0 20px
+}
+
+.navbar-container,
+.left-section,
+.right-section,
+.profile-section {
+    display: flex;
+    align-items: center
+}
+
+.navbar-container {
+    justify-content: space-between;
+    width: 100%
+}
+
+.left-section {
+    gap: 10px
+}
+
+.right-section {
+    gap: 18px
+}
+
+.logo-box {
+    width: 16px;
+    height: 16px;
+    background: #69d34d;
+    border-radius: 2px
+}
+
+.logo-text {
+    font-size: 28px;
+    font-weight: 700;
+    color: #222
+}
+
+.divider {
+    width: 1px;
+    height: 28px;
+    background: #e0e0e0
+}
+
+.profile-section {
+    gap: 8px;
+    color: #444;
+    font-size: 14px;
+    font-weight: 500
+}
+
+.profile-img {
+    font-size: 34px;
+    color: #64748b
+}
+
+.team-content {
+    --background: #f5f7fb
+}
+
+.page-hero,
+.member-grid {
+    width: min(1180px, calc(100% - 32px));
+    margin: 18px auto
+}
+
+.page-hero {
+    padding: 20px;
+    border: 1px solid #e6ebf2;
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 0 12px 28px rgba(31, 43, 68, .08)
+}
+
+.page-hero h1 {
+    margin: 0;
+    color: #0f172a;
+    font-size: clamp(24px, 4vw, 38px)
+}
+
+.page-hero p {
+    margin: 10px 0 0;
+    color: #64748b;
+    line-height: 1.6
+}
+
+.eyebrow {
+    margin: 0 0 8px;
+    color: #2563eb;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase
+}
+
+.member-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px
+}
+
+.member-card {
+    display: grid;
+    grid-template-columns: 84px minmax(0, 1fr);
+    gap: 16px;
+    align-items: flex-start;
+    padding: 18px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 12px 26px rgba(31, 43, 68, .08)
+}
+
+.member-photo {
+    width: 84px;
+    height: 84px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 4px solid #eff6ff;
+    flex: 0 0 auto
+}
+
+.member-info {
+    flex: 1;
+    min-width: 0
+}
+
+.member-info h3 {
+    margin: 0 0 8px;
+    color: #0f172a;
+    font-size: 18px
+}
+
+.member-info p {
+    margin: 0 0 6px;
+    color: #475569;
+    font-size: 14px;
+    line-height: 1.4
+}
+
+.status-pill {
+    display: inline-flex;
+    margin-top: 6px;
+    padding: 7px 12px;
+    border-radius: 999px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase
+}
+
+.attendance-panel {
+    display: grid;
+    gap: 10px;
+    margin-top: 14px
+}
+
+.attendance-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 12px;
+    border: 1px solid #e2e8f0;
+    border-left: 4px solid #f59e0b;
+    border-radius: 8px;
+    background: #fff7ed
+}
+
+.attendance-row.submitted {
+    border-left-color: #16a34a;
+    background: #f0fdf4
+}
+
+.attendance-row.pending {
+    border-left-color: #f59e0b;
+    background: #fff7ed
+}
+
+.attendance-label {
+    display: block;
+    margin-bottom: 3px;
+    color: #64748b;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase
+}
+
+.attendance-row strong {
+    color: #0f172a;
+    font-size: 13px
+}
+
+.attendance-badge {
+    flex: 0 0 auto;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: #fed7aa;
+    color: #9a3412;
+    font-size: 12px;
+    font-weight: 800
+}
+
+.attendance-row.submitted .attendance-badge {
+    background: #bbf7d0;
+    color: #166534
+}
+
+@media (max-width: 900px) {
+    .member-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr))
+    }
+}
+
+@media (max-width: 640px) {
+    ion-toolbar {
+        padding: 0 12px
+    }
+
+    .logo-text {
+        font-size: 22px
+    }
+
+    .profile-section span,
+    .divider {
+        // display: none
+    }
+
+    .member-grid {
+        grid-template-columns: 1fr
+    }
+
+    .member-card {
+        grid-template-columns: 64px minmax(0, 1fr);
+        padding: 14px
+    }
+
+    .member-photo {
+        width: 64px;
+        height: 64px
+    }
+
+    .attendance-row {
+        align-items: flex-start;
+        flex-direction: column
+    }
+}
+
+.logout-btn {
+  gap: 6px;
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 16px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer
+}
+
+.logout-btn ion-icon {
+  color: #fff;
+  font-size: 18px
+}

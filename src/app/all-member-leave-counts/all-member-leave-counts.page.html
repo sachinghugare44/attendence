@@ -1,0 +1,130 @@
+<ion-header class="custom-header">
+  <ion-toolbar>
+
+    <!-- Left Logo -->
+    <div class="navbar-container">
+
+      <div class="left-section">
+        <div class="logo-box"></div>
+        <span class="logo-text">Attendance</span>
+      </div>
+
+      <!-- Right Section -->
+      <div class="right-section">
+
+        <!-- <ion-icon name="search-outline"></ion-icon>
+
+        <ion-icon name="cart-outline"></ion-icon>
+
+        <ion-icon name="stats-chart-outline"></ion-icon>
+
+        <div class="notification-wrapper">
+          <ion-icon name="notifications-outline"></ion-icon>
+          <span class="dot"></span>
+        </div> -->
+
+        <!-- Divider -->
+        <div class="divider"></div>
+
+        <!-- Language -->
+        
+
+        <!-- Profile -->
+        <div class="profile-section">
+          <!-- <img
+            src="https://i.pravatar.cc/100"
+            alt="profile"
+            class="profile-img"
+          /> -->
+          <ion-icon class="profile-img" name="person-circle-outline"></ion-icon>
+
+          <span style="font-size: large;">{{responseData?.name | uppercase}}</span>
+
+          <!-- <ion-icon name="chevron-down-outline"></ion-icon> -->
+        </div>
+
+         <button class="logout-btn" (click)="logout()">
+    <ion-icon name="log-out-outline"></ion-icon>
+    <span>Logout</span>
+  </button>
+
+
+
+      </div>
+
+    </div>
+
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="leave-content">
+  <section class="page-hero">
+    <p class="eyebrow">Monthly Overview</p>
+    <h1>Attendance and leave counts by member</h1>
+    <p>Filter by month and member to inspect individual or team-wide monthly statistics.</p>
+  </section>
+
+  <section class="filter-bar">
+    <ion-item lines="none" class="filter-card">
+      <ion-icon name="calendar-outline" slot="start"></ion-icon>
+      <ion-select interface="popover" label="Month" label-placement="stacked" [(ngModel)]="selectedMonth">
+        <ion-select-option *ngFor="let month of monthOptions" [value]="month.value">{{ month.value }} - {{ month.name }}</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item lines="none" class="filter-card">
+      <ion-icon name="people-outline" slot="start"></ion-icon>
+      <ion-select interface="popover" label="Team Member" label-placement="stacked" [(ngModel)]="selectedMember">
+        <ion-select-option *ngFor="let member of memberOptions" [value]="member.value">{{ member.label }}</ion-select-option>
+      </ion-select>
+    </ion-item>
+  </section>
+
+  <section class="summary-grid">
+    <ion-card class="summary-card present">
+      <ion-card-content>
+        <strong>{{ summaryTotals.P }}</strong>
+        <span>Present</span>
+      </ion-card-content>
+    </ion-card>
+    <ion-card class="summary-card leave">
+      <ion-card-content>
+        <strong>{{ summaryTotals.L }}</strong>
+        <span>Leave</span>
+      </ion-card-content>
+    </ion-card>
+    <ion-card class="summary-card wfh">
+      <ion-card-content>
+        <strong>{{ summaryTotals.WFH }}</strong>
+        <span>WFH</span>
+      </ion-card-content>
+    </ion-card>
+    <ion-card class="summary-card holiday">
+      <ion-card-content>
+        <strong>{{ summaryTotals.H }}</strong>
+        <span>Holiday</span>
+      </ion-card-content>
+    </ion-card>
+  </section>
+
+  <section class="member-table" *ngIf="selectedMember === 'all'">
+    <div class="table-header">
+      <span>Member</span><span>P</span><span>L</span><span>WFH</span><span>H</span>
+    </div>
+    <div class="table-row" *ngFor="let member of filteredMemberStats">
+      <span class="member-name">{{ member.name }}</span><span>{{ member.P }}</span><span>{{ member.L }}</span><span>{{ member.WFH }}</span><span>{{ member.H }}</span>
+    </div>
+  </section>
+
+  <section class="member-cards" *ngIf="selectedMember !== 'all'">
+    <article class="member-summary-card" *ngFor="let member of filteredMemberStats">
+      <h3>{{ member.name }}</h3>
+      <div class="stats-row">
+        <div><strong>{{ member.P }}</strong><span>Present</span></div>
+        <div><strong>{{ member.L }}</strong><span>Leave</span></div>
+        <div><strong>{{ member.WFH }}</strong><span>WFH</span></div>
+        <div><strong>{{ member.H }}</strong><span>Holiday</span></div>
+      </div>
+    </article>
+  </section>
+</ion-content>

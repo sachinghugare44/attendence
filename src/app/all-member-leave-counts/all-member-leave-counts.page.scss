@@ -1,0 +1,294 @@
+.custom-header {
+    --background: #fff;
+    border-bottom: 1px solid #ececec
+}
+
+ion-toolbar {
+    --background: #fff;
+    --min-height: 70px;
+    padding: 0 20px
+}
+
+.navbar-container,
+.left-section,
+.right-section,
+.profile-section {
+    display: flex;
+    align-items: center
+}
+
+.navbar-container {
+    justify-content: space-between;
+    width: 100%
+}
+
+.left-section {
+    gap: 10px
+}
+
+.right-section {
+    gap: 18px
+}
+
+.logo-box {
+    width: 16px;
+    height: 16px;
+    background: #69d34d;
+    border-radius: 2px
+}
+
+.logo-text {
+    font-size: 28px;
+    font-weight: 700;
+    color: #222
+}
+
+.divider {
+    width: 1px;
+    height: 28px;
+    background: #e0e0e0
+}
+
+.profile-section {
+    gap: 8px;
+    color: #444;
+    font-size: 14px;
+    font-weight: 500
+}
+
+.profile-img {
+    font-size: 34px;
+    color: #64748b
+}
+
+.leave-content {
+    --background: #f5f7fb
+}
+
+.page-hero,
+.filter-bar,
+.summary-grid,
+.member-table,
+.member-cards {
+    width: min(1180px, calc(100% - 32px));
+    margin: 18px auto
+}
+
+.page-hero {
+    padding: 20px;
+    border: 1px solid #e6ebf2;
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 0 12px 28px rgba(31, 43, 68, .08)
+}
+
+.eyebrow {
+    margin: 0 0 8px;
+    color: #2563eb;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase
+}
+
+.page-hero h1 {
+    margin: 0;
+    color: #0f172a;
+    font-size: clamp(24px, 4vw, 38px)
+}
+
+.page-hero p {
+    margin: 10px 0 0;
+    color: #64748b;
+    line-height: 1.6
+}
+
+.filter-bar {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px
+}
+
+.filter-card {
+    --background: #fff;
+    border: 1px solid #dbe4f0;
+    border-radius: 14px;
+    box-shadow: 0 10px 24px rgba(31, 43, 68, .06)
+}
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px
+}
+
+.summary-card {
+    margin: 0;
+    border-radius: 16px;
+    color: #fff
+}
+
+.summary-card strong {
+    display: block;
+    font-size: 34px
+}
+
+.summary-card span {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .04em
+}
+
+.present {
+    background: linear-gradient(135deg, #16a34a, #22c55e)
+}
+
+.leave {
+    background: linear-gradient(135deg, #ea580c, #fb923c)
+}
+
+.wfh {
+    background: linear-gradient(135deg, #2563eb, #06b6d4)
+}
+
+.holiday {
+    background: linear-gradient(135deg, #ca8a04, #eab308)
+}
+
+.member-table {
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    background: #fff;
+    overflow: hidden;
+    box-shadow: 0 10px 24px rgba(31, 43, 68, .06)
+}
+
+.table-header,
+.table-row {
+    display: grid;
+    grid-template-columns: 2fr repeat(4, 1fr);
+    gap: 10px;
+    align-items: center;
+    padding: 14px 16px
+}
+
+.table-header {
+    background: #f8fafc;
+    color: #334155;
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .04em
+}
+
+.table-row {
+    border-top: 1px solid #eef2f7;
+    color: #0f172a;
+    font-size: 14px
+}
+
+.member-name {
+    font-weight: 700
+}
+
+.member-cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px
+}
+
+.member-summary-card {
+    padding: 18px;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 10px 24px rgba(31, 43, 68, .06)
+}
+
+.member-summary-card h3 {
+    margin: 0 0 14px;
+    color: #0f172a
+}
+
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px
+}
+
+.stats-row div {
+    padding: 12px;
+    border-radius: 12px;
+    background: #f8fafc;
+    text-align: center
+}
+
+.stats-row strong {
+    display: block;
+    color: #0f172a;
+    font-size: 22px
+}
+
+.stats-row span {
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase
+}
+
+@media (max-width:900px) {
+
+    .summary-grid,
+    .member-cards {
+        grid-template-columns: repeat(2, 1fr)
+    }
+
+    .filter-bar {
+        grid-template-columns: 1fr
+    }
+}
+
+@media (max-width:640px) {
+    ion-toolbar {
+        padding: 0 12px
+    }
+
+    .logo-text {
+        font-size: 22px
+    }
+
+    .profile-section span,
+    .divider {
+        // display: none
+    }
+
+    .summary-grid,
+    .member-cards {
+        grid-template-columns: 1fr
+    }
+
+    .table-header,
+    .table-row {
+        grid-template-columns: 1.6fr repeat(4, .7fr);
+        font-size: 12px;
+        overflow-x: auto
+    }
+}
+
+.logout-btn {
+  gap: 6px;
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 16px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer
+}
+
+.logout-btn ion-icon {
+  color: #fff;
+  font-size: 18px
+}

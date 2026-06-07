@@ -62,8 +62,15 @@ export class LoginPage {
         this.presentToast('Login successful!', 'success');
         localStorage.setItem('mobile', requestBody.mobile);
         localStorage.setItem('name', requestBody.password);
-        localStorage.setItem('userId', responseData?.name);
+        localStorage.setItem('userId', responseData?.data.name);
+        localStorage.setItem('usertype', responseData.data.usertype);
+        if(responseData?.data.usertype === '2'){
+        this.route.navigate(['/admin-dashboard']);
+      }
+      else{
         this.route.navigate(['/member-dashboard']);
+      }
+
       },
       error: error => {
         this.loginError = error?.error?.message || 'Invalid credentials. Please try again.';
@@ -85,7 +92,8 @@ export class LoginPage {
       email: this.registerForm.value.email,
       name: this.registerForm.value.name,
       password: this.registerForm.value.password,
-      mobile: this.registerForm.value.mobile
+      mobile: this.registerForm.value.mobile,
+      usertype:1
     };
 
     this.apiService.createUser(requestBody).subscribe({

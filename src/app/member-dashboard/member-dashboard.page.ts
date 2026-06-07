@@ -84,9 +84,9 @@ export class MemberDashboardPage implements OnInit {
 
   openMonthHistory(monthName: string, monthIndex: number, event?: MouseEvent) {
     event?.preventDefault();
-    if (!this.isMonthAccessible(monthIndex)) {
-      return;
-    }
+    // if (!this.isMonthAccessible(monthIndex)) {
+    //   return;
+    // }
     this.router.navigate(['/member-dashboard-history'], {
       queryParams: { month: monthIndex, monthName }
     });
@@ -94,6 +94,7 @@ export class MemberDashboardPage implements OnInit {
 
   openMonthDetails(monthName: string, monthIndex: number) {
     if (!this.isMonthAccessible(monthIndex)) {
+      alert('You can only mark attendance for the current month.');
       return;
     }
 

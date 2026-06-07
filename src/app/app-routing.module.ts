@@ -15,6 +15,18 @@ const routes: Routes = [
     loadChildren: () => import('./member-dashboard-history/member-dashboard-history.module').then(m => m.MemberDashboardHistoryPageModule)
   },
   {
+    path: 'admin-dashboard',
+    loadChildren: () => import('./admin-dashboard/admin-dashboard.module').then(m => m.AdminDashboardPageModule)
+  },
+  {
+    path: 'team-member-details',
+    loadChildren: () => import('./team-member-details/team-member-details.module').then(m => m.TeamMemberDetailsPageModule)
+  },
+  {
+    path: 'all-member-leave-counts',
+    loadChildren: () => import('./all-member-leave-counts/all-member-leave-counts.module').then(m => m.AllMemberLeaveCountsPageModule)
+  },
+  {
     path: '',
     redirectTo: 'login',
     pathMatch: 'full'

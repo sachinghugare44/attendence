@@ -1,0 +1,109 @@
+<ion-header class="custom-header">
+  <ion-toolbar>
+
+    <!-- Left Logo -->
+    <div class="navbar-container">
+
+      <div class="left-section">
+        <div class="logo-box"></div>
+        <span class="logo-text">Attendance</span>
+      </div>
+
+      <!-- Right Section -->
+      <div class="right-section">
+
+        <!-- <ion-icon name="search-outline"></ion-icon>
+
+        <ion-icon name="cart-outline"></ion-icon>
+
+        <ion-icon name="stats-chart-outline"></ion-icon>
+
+        <div class="notification-wrapper">
+          <ion-icon name="notifications-outline"></ion-icon>
+          <span class="dot"></span>
+        </div> -->
+
+        <!-- Divider -->
+        <div class="divider"></div>
+
+        <!-- Language -->
+        
+
+        <!-- Profile -->
+        <div class="profile-section">
+          <!-- <img
+            src="https://i.pravatar.cc/100"
+            alt="profile"
+            class="profile-img"
+          /> -->
+          <ion-icon class="profile-img" name="person-circle-outline"></ion-icon>
+
+          <span style="font-size: large;">{{responseData?.name | uppercase}}</span>
+
+          <!-- <ion-icon name="chevron-down-outline"></ion-icon> -->
+        </div>
+
+         <button class="logout-btn" (click)="logout()">
+    <ion-icon name="log-out-outline"></ion-icon>
+    <span>Logout</span>
+  </button>
+
+
+
+      </div>
+
+    </div>
+
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="team-content">
+  <section class="page-hero">
+    <p class="eyebrow">Team Member Details</p>
+    <h1>Professional ID-style team directory</h1>
+    <p>Browse every member with contact details, role, and attendance status in a responsive grid.</p>
+  </section>
+
+  <section class="member-grid">
+    <article class="member-card" *ngFor="let member of members">
+      <ion-icon class="member-photo" name="person-circle-sharp"></ion-icon>
+      <!-- <img class="member-photo" [src]="member.photo || 'assets/icon/favicon.png'" > -->
+      <div class="member-info">
+        <h3>{{ member.name }} <span *ngIf="member.usertype == 2">(Admin-TL)</span>
+        <span *ngIf="member.usertype == 1">(Team Member)</span></h3>
+        <p><strong>Mobile:</strong> {{ member.mobile }}</p>
+        <p><strong>Email:</strong> {{ member.email }}</p>
+        <!-- <p><strong>Role:</strong> {{ member.role }}</p> -->
+        <!-- <div class="status-pill">{{ member.status || 'Active' }}</div> -->
+
+        <div class="attendance-panel">
+          <div
+            class="attendance-row"
+            [ngClass]="getStatusClass(member.attendanceStatus?.current)"
+          >
+            <div>
+              <span class="attendance-label">Current Month</span>
+              <strong>{{ member.attendanceStatus?.current?.month }}/{{ member.attendanceStatus?.current?.year }}</strong>
+            </div>
+            <span class="attendance-badge">
+              {{ member.attendanceStatus?.current?.submitted ? 'Submitted' : 'Pending' }}
+            </span>
+          </div>
+
+          <div
+            class="attendance-row"
+            [ngClass]="getStatusClass(member.attendanceStatus?.previous)"
+          >
+            <div>
+              <span class="attendance-label">Last Month</span>
+              <strong>{{ member.attendanceStatus?.previous?.month }}/{{ member.attendanceStatus?.previous?.year }}</strong>
+            </div>
+            <span class="attendance-badge">
+              {{ member.attendanceStatus?.previous?.submitted ? 'Submitted' : 'Pending' }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </article>
+  </section>
+</ion-content>
