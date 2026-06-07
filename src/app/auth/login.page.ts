@@ -98,6 +98,8 @@ export class LoginPage {
         localStorage.setItem('name', requestBody.password);
         localStorage.setItem('userId', responseData?.data.name);
         localStorage.setItem('usertype', responseData.data.usertype);
+        // clear login form on success
+        this.loginForm.reset();
         if(responseData?.data.usertype === '2'){
           this.route.navigate(['/admin-dashboard']);
         } else {
@@ -107,14 +109,14 @@ export class LoginPage {
       error: error => {
         this.loginError = error?.error?.message || 'Invalid credentials. Please try again.';
         this.presentToast(this.loginError, 'danger');
-        this.loginForm.reset();
+        // clear only the password on error for security
+        try { this.loginForm.patchValue({ password: '' }); } catch(e) {}
       },
     });
   }
 
   // OTP Login - Send OTP
   sendOtpForLogin() {
-    debugger
     this.loginError = '';
     const email = this.otpLoginForm.get('email')?.value;
     const mobile = this.otpLoginForm.get('mobile')?.value;
@@ -139,6 +141,8 @@ export class LoginPage {
         this.loginError = error?.error?.message || 'Failed to send OTP';
         this.presentToast(this.loginError, 'danger');
       }
+        // clear otp form on success
+        // try { this.otpLoginForm.reset(); }
     });
   }
 
@@ -149,6 +153,8 @@ export class LoginPage {
     const otpCode = this.otpLoginForm.get('otpCode')?.value;
 
     if (!otpCode) {
+        // clear only otp code on error
+        try { this.otpLoginForm.patchValue({ otpCode: '' }); } catch(e) {}
       this.loginError = 'Please enter OTP code';
       return;
     }

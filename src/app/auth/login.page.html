@@ -93,7 +93,7 @@
 
                   <div *ngIf="registerOtpSent">
                     <form [formGroup]="registerOtpForm" (ngSubmit)="verifyEmailOtp()">
-                      <p class="otp-instruction">Enter the OTP sent to your email</p>
+                      <!-- <p class="otp-instruction">Enter the OTP sent to your email</p> -->
                       <ion-item>
                         <ion-input formControlName="otpCode" type="text" placeholder="Enter OTP Code" maxlength="6"></ion-input>
                       </ion-item>
