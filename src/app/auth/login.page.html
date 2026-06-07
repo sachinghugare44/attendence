@@ -1,65 +1,137 @@
 
 <ion-content>
   <div class="content">
-<div class="auth-outer-center">
-  <ion-card class="auth-card">
-    <div class="auth-card-inner">
-      <div class="auth-card-image">
-        <img src="assets/home/image.png" alt="Login Illustration" />
-      </div>
-      <div class="auth-card-form">
-        <ion-card-header>
-          <ion-card-title>{{ isLogin ? 'Login' : 'Register' }}</ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
-          <ion-text color="danger" *ngIf="loginError && isLogin" class="error-message">{{ loginError }}</ion-text>
-          <ion-text color="danger" *ngIf="registerError && !isLogin" class="error-message">{{ registerError }}</ion-text>
-          <ion-text color="success" *ngIf="successMessage" class="success-message">{{ successMessage }}</ion-text>
-          <!-- Login Form -->
-          <form *ngIf="isLogin" [formGroup]="loginForm" (ngSubmit)="onLogin()">
-            <ion-item>
-              <!-- <ion-label position="floating">Username</ion-label> -->
-              <ion-input formControlName="username" type="text" placeholder="Enter Username"></ion-input>
-            </ion-item>
-            <ion-item>
-              <!-- <ion-label position="floating">Password</ion-label> -->
-              <ion-input formControlName="password" type="password" placeholder="Enter Password"></ion-input>
-            </ion-item>
-            <ion-button expand="block" type="submit" [disabled]="loginForm.invalid">
-              Login
-            </ion-button>
-          </form>
-          <!-- Register Form -->
-          <form *ngIf="!isLogin" [formGroup]="registerForm" (ngSubmit)="onRegister()">
-            <ion-item>
-              <!-- <ion-label position="floating">Name</ion-label> -->
-              <ion-input formControlName="name" type="text" placeholder="Enter Name"></ion-input>
-            </ion-item>
-            <ion-item>
-              <!-- <ion-label position="floating">Mobile Number</ion-label> -->
-              <ion-input formControlName="mobile" type="tel" maxlength="10" placeholder="Enter Mobile Number"></ion-input>
-            </ion-item>
-            <ion-item>
-              <!-- <ion-label position="floating">Email</ion-label> -->
-              <ion-input formControlName="email" type="email" placeholder="Enter Email"></ion-input>
-            </ion-item>
-            <ion-item>
-              <!-- <ion-label position="floating">Password</ion-label> -->
-              <ion-input formControlName="password" type="password" placeholder="Enter Password"></ion-input>
-            </ion-item>
-            <ion-button expand="block" type="submit" [disabled]="registerForm.invalid">
-              Register
-            </ion-button>
-          </form>
-          <div class="toggle-link">
-            <a (click)="toggleMode()">
-              {{ isLogin ? 'New user? Register here' : 'Already have an account? Login' }}
-            </a>
+    <div class="auth-outer-center">
+      <ion-card class="auth-card">
+        <div class="auth-card-inner">
+          <div class="auth-card-image">
+            <img src="assets/home/image.png" alt="Login Illustration" />
           </div>
-        </ion-card-content>
-      </div>
+          <div class="auth-card-form">
+            <!-- Tabs for mode selection -->
+            <ion-segment [value]="authMode" (ionChange)="onAuthModeChange($event)" class="auth-tabs">
+              <ion-segment-button value="password-login">
+                <ion-label>Login</ion-label>
+              </ion-segment-button>
+              <ion-segment-button value="otp-login">
+                <ion-label>OTP Login</ion-label>
+              </ion-segment-button>
+              <ion-segment-button value="register">
+                <ion-label>Register</ion-label>
+              </ion-segment-button>
+            </ion-segment>
+
+            <!-- Error and Success Messages -->
+            <ion-text color="danger" *ngIf="loginError" class="error-message">{{ loginError }}</ion-text>
+            <ion-text color="danger" *ngIf="registerError" class="error-message">{{ registerError }}</ion-text>
+            <ion-text color="success" *ngIf="successMessage" class="success-message">{{ successMessage }}</ion-text>
+
+            <ion-card-content>
+              <!-- PASSWORD LOGIN -->
+              <form *ngIf="authMode === 'password-login'" [formGroup]="loginForm" (ngSubmit)="onLogin()">
+                <ion-item>
+                  <ion-input formControlName="username" type="text" placeholder="Enter Mobile/Username"></ion-input>
+                </ion-item>
+                <ion-item>
+                  <ion-input formControlName="password" type="password" placeholder="Enter Password"></ion-input>
+                </ion-item>
+                <ion-button expand="block" type="submit" [disabled]="loginForm.invalid">
+                  Login
+                </ion-button>
+              </form>
+
+              <!-- OTP LOGIN -->
+              <div *ngIf="authMode === 'otp-login'">
+                <div *ngIf="!otpSent">
+                  <form [formGroup]="otpLoginForm" (ngSubmit)="sendOtpForLogin()">
+                    <ion-item>
+                      <ion-input formControlName="email" type="email" placeholder="Enter Email"></ion-input>
+                    </ion-item>
+                    <ion-item>
+                      <ion-input formControlName="mobile" type="tel" maxlength="10" placeholder="Enter Mobile"></ion-input>
+                    </ion-item>
+                    <ion-button expand="block" type="submit" [disabled]="!otpLoginForm.get('email')?.valid || !otpLoginForm.get('mobile')?.valid || isLoadingOtp">
+                      <ion-spinner *ngIf="isLoadingOtp" name="crescent"></ion-spinner>
+                      <span *ngIf="!isLoadingOtp">Send OTP</span>
+                    </ion-button>
+                  </form>
+                </div>
+
+                <div *ngIf="otpSent && !otpVerified">
+                  <form [formGroup]="otpLoginForm" (ngSubmit)="verifyOtpForLogin()">
+                    <p class="otp-instruction">Enter the OTP sent to your email</p>
+                    <ion-item>
+                      <ion-input formControlName="otpCode" type="text" placeholder="Enter OTP Code" maxlength="6"></ion-input>
+                    </ion-item>
+                    <ion-button expand="block" type="submit" [disabled]="!otpLoginForm.get('otpCode')?.value || isLoadingOtp">
+                      <ion-spinner *ngIf="isLoadingOtp" name="crescent"></ion-spinner>
+                      <span *ngIf="!isLoadingOtp">Verify OTP</span>
+                    </ion-button>
+                    <ion-button expand="block" fill="clear" (click)="otpSent = false; otpLoginForm.reset()">
+                      Back
+                    </ion-button>
+                  </form>
+                </div>
+              </div>
+
+              <!-- REGISTER -->
+              <div *ngIf="authMode === 'register'">
+                <!-- Step 1: Email Verification -->
+                <div *ngIf="!registerEmailVerified">
+                  <h3 style="text-align: center; margin-bottom: 1rem;">Verify Your Email</h3>
+                  <div *ngIf="!registerOtpSent">
+                    <form [formGroup]="registerOtpForm" (ngSubmit)="sendOtpForRegister()">
+                      <ion-item>
+                        <ion-input formControlName="email" type="email" placeholder="Enter Email"></ion-input>
+                      </ion-item>
+                      <ion-button expand="block" type="submit" [disabled]="!registerOtpForm.get('email')?.valid || isLoadingRegisterOtp">
+                        <ion-spinner *ngIf="isLoadingRegisterOtp" name="crescent"></ion-spinner>
+                        <span *ngIf="!isLoadingRegisterOtp">Send OTP</span>
+                      </ion-button>
+                    </form>
+                  </div>
+
+                  <div *ngIf="registerOtpSent">
+                    <form [formGroup]="registerOtpForm" (ngSubmit)="verifyEmailOtp()">
+                      <p class="otp-instruction">Enter the OTP sent to your email</p>
+                      <ion-item>
+                        <ion-input formControlName="otpCode" type="text" placeholder="Enter OTP Code" maxlength="6"></ion-input>
+                      </ion-item>
+                      <ion-button expand="block" type="submit" [disabled]="!registerOtpForm.get('otpCode')?.value || isLoadingRegisterOtp">
+                        <ion-spinner *ngIf="isLoadingRegisterOtp" name="crescent"></ion-spinner>
+                        <span *ngIf="!isLoadingRegisterOtp">Verify Email</span>
+                      </ion-button>
+                      <ion-button expand="block" fill="clear" (click)="registerOtpSent = false; registerOtpForm.patchValue({otpCode: ''})">
+                        Back
+                      </ion-button>
+                    </form>
+                  </div>
+                </div>
+
+                <!-- Step 2: Complete Registration -->
+                <form *ngIf="registerEmailVerified" [formGroup]="registerForm" (ngSubmit)="onRegister()">
+                  <h3 style="text-align: center; margin-bottom: 1rem;">Complete Registration</h3>
+                  <ion-item>
+                    <ion-input formControlName="name" type="text" placeholder="Enter Name"></ion-input>
+                  </ion-item>
+                  <ion-item>
+                    <ion-input formControlName="mobile" type="tel" maxlength="10" placeholder="Enter Mobile Number"></ion-input>
+                  </ion-item>
+                  <ion-item>
+                    <ion-input formControlName="email" type="email" placeholder="Email (verified)" readonly></ion-input>
+                  </ion-item>
+                  <ion-item>
+                    <ion-input formControlName="password" type="password" placeholder="Enter Password"></ion-input>
+                  </ion-item>
+                  <ion-button expand="block" type="submit" [disabled]="registerForm.invalid">
+                    Register
+                  </ion-button>
+                </form>
+              </div>
+            </ion-card-content>
+          </div>
+        </div>
+      </ion-card>
     </div>
-  </ion-card>
-</div>
-</div>
+  </div>
 </ion-content>

@@ -58,4 +58,12 @@ export class ApiService {
   submitLeaveRequest(data: any) {
     return this.http.post(`${this.baseUrl}/admin-access`, data);
   }
+
+  sendOtp(data: any) {
+    return this.http.post(`${this.baseUrl}/otp/send`, data);
+  }
+
+  verifyOtp(data: any) {
+    return this.http.post(`${this.baseUrl}/otp/verify`, data);
+  }
 }

@@ -50,7 +50,7 @@ export class AllMemberLeaveCountsPage implements OnInit {
     const mobile = localStorage.getItem('mobile');
     const password = localStorage.getItem('name');
     const usertype = localStorage.getItem('usertype');
-      if (usertype === '2' && mobile != undefined && password != undefined) {
+      if (usertype === '2' && mobile != undefined ) {
       } 
       else {
         alert('Unauthorized access. Please log in as admin.');

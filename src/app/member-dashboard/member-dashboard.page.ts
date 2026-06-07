@@ -70,7 +70,7 @@ export class MemberDashboardPage implements OnInit {
     const mobile = localStorage.getItem('mobile');
     const password = localStorage.getItem('name');
 
-    if (!mobile || !password) {
+    if (!mobile) {
       this.router.navigate(['/login']);
       return;
     }

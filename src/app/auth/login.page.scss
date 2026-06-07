@@ -190,6 +190,30 @@ font-weight: 800;
 color:white;
 }
 
+
+// New OTP and Tab Styles
+.auth-tabs {
+  margin-bottom: 1.5rem;
+  --background: transparent;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.auth-tabs ::ng-deep .indicator-background {
+  background: #3880ff;
+}
+
+.auth-tabs ::ng-deep .segment-button-checked {
+  color: #3880ff;
+}
+
+.otp-instruction {
+  text-align: center;
+  color: #666;
+  margin: 1rem 0;
+  font-size: 0.95rem;
+  padding: 0 1rem;
+}
+
 @media (max-width: 1024px) and (min-width: 768px) {
    .largedisplay{
     display:block;
