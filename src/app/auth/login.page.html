@@ -13,9 +13,9 @@
               <ion-segment-button value="password-login">
                 <ion-label>Login</ion-label>
               </ion-segment-button>
-              <ion-segment-button value="otp-login">
+              <!-- <ion-segment-button value="otp-login">
                 <ion-label>OTP Login</ion-label>
-              </ion-segment-button>
+              </ion-segment-button> -->
               <ion-segment-button value="register">
                 <ion-label>Register</ion-label>
               </ion-segment-button>
@@ -77,7 +77,7 @@
               <!-- REGISTER -->
               <div *ngIf="authMode === 'register'">
                 <!-- Step 1: Email Verification -->
-                <div *ngIf="!registerEmailVerified">
+                <!-- <div *ngIf="!registerEmailVerified">
                   <h3 style="text-align: center; margin-bottom: 1rem;">Verify Your Email</h3>
                   <div *ngIf="!registerOtpSent">
                     <form [formGroup]="registerOtpForm" (ngSubmit)="sendOtpForRegister()">
@@ -93,7 +93,6 @@
 
                   <div *ngIf="registerOtpSent">
                     <form [formGroup]="registerOtpForm" (ngSubmit)="verifyEmailOtp()">
-                      <!-- <p class="otp-instruction">Enter the OTP sent to your email</p> -->
                       <ion-item>
                         <ion-input formControlName="otpCode" type="text" placeholder="Enter OTP Code" maxlength="6"></ion-input>
                       </ion-item>
@@ -106,10 +105,10 @@
                       </ion-button>
                     </form>
                   </div>
-                </div>
+                </div> -->
 
                 <!-- Step 2: Complete Registration -->
-                <form *ngIf="registerEmailVerified" [formGroup]="registerForm" (ngSubmit)="onRegister()">
+                <form  [formGroup]="registerForm" (ngSubmit)="onRegister()">
                   <h3 style="text-align: center; margin-bottom: 1rem;">Complete Registration</h3>
                   <ion-item>
                     <ion-input formControlName="name" type="text" placeholder="Enter Name"></ion-input>
@@ -118,7 +117,7 @@
                     <ion-input formControlName="mobile" type="tel" maxlength="10" placeholder="Enter Mobile Number"></ion-input>
                   </ion-item>
                   <ion-item>
-                    <ion-input formControlName="email" type="email" placeholder="Email (verified)" readonly></ion-input>
+                    <ion-input formControlName="email" type="email" placeholder="Enter Email" ></ion-input>
                   </ion-item>
                   <ion-item>
                     <ion-input formControlName="password" type="password" placeholder="Enter Password"></ion-input>

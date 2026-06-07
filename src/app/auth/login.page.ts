@@ -237,7 +237,7 @@ export class LoginPage {
     this.apiService.verifyOtp(requestBody).subscribe({
       next: () => {
         this.isLoadingRegisterOtp = false;
-        this.registerEmailVerified = true;
+        // this.registerEmailVerified = true;
         this.successMessage = 'Email verified! Now complete your registration.';
         this.presentToast('Email verified!', 'success');
         
@@ -269,11 +269,11 @@ export class LoginPage {
     };
 
     // Only allow register if email is verified
-    if (!this.registerEmailVerified) {
-      this.registerError = 'Please verify your email first';
-      this.presentToast(this.registerError, 'success');
-      return;
-    }
+    // if (!this.registerEmailVerified) {
+    //   this.registerError = 'Please verify your email first';
+    //   this.presentToast(this.registerError, 'success');
+    //   return;
+    // }
 
     this.apiService.createUser(requestBody).subscribe({
       next: () => {
