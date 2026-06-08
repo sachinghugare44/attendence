@@ -118,7 +118,7 @@ ion-toolbar {
 
 .summary-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(6, 1fr);
     gap: 14px
 }
 
@@ -156,6 +156,14 @@ ion-toolbar {
     background: linear-gradient(135deg, #ca8a04, #eab308)
 }
 
+.weekend {
+    background: linear-gradient(135deg, #92400e, #d97706);
+}
+
+.other {
+    background: linear-gradient(135deg, #ec4899, #f472b6);
+}
+
 .member-table {
     border: 1px solid #e2e8f0;
     border-radius: 16px;
@@ -167,7 +175,7 @@ ion-toolbar {
 .table-header,
 .table-row {
     display: grid;
-    grid-template-columns: 2fr repeat(4, 1fr);
+    grid-template-columns: 2fr repeat(6, 1fr);
     gap: 10px;
     align-items: center;
     padding: 14px 16px
@@ -213,7 +221,7 @@ ion-toolbar {
 
 .stats-row {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 10px
 }
 
@@ -270,7 +278,7 @@ ion-toolbar {
 
     .table-header,
     .table-row {
-        grid-template-columns: 1.6fr repeat(4, .7fr);
+        grid-template-columns: 1.6fr repeat(6, .14fr);
         font-size: 12px;
         overflow-x: auto
     }

@@ -12,6 +12,12 @@ export class AllMemberLeaveCountsPage implements OnInit {
   selectedMonth = new Date().getMonth() + 1;
   selectedMember = 'all';
   responseData  : any;
+  memberStats: any[] = [];
+
+users: any[] = [];
+
+memberOptions: any[] = [
+];
   monthOptions = [
     { value: 1, label: 'Jan', name: 'January' },
     { value: 2, label: 'Feb', name: 'February' },
@@ -27,20 +33,7 @@ export class AllMemberLeaveCountsPage implements OnInit {
     { value: 12, label: 'Dec', name: 'December' }
   ];
 
-  memberOptions = [
-    { value: 'all', label: 'All Members' },
-    { value: 'amit', label: 'Amit Sharma' },
-    { value: 'neha', label: 'Neha Patel' },
-    { value: 'rahul', label: 'Rahul Verma' },
-    { value: 'priya', label: 'Priya Singh' }
-  ];
-
-  memberStats = [
-    { name: 'Amit Sharma', P: 18, L: 2, WFH: 1, H: 0 },
-    { name: 'Neha Patel', P: 16, L: 4, WFH: 0, H: 1 },
-    { name: 'Rahul Verma', P: 20, L: 1, WFH: 0, H: 0 },
-    { name: 'Priya Singh', P: 17, L: 3, WFH: 1, H: 0 }
-  ];
+  
   constructor(private router: Router,
               private apiService: ApiService
   ) { }
@@ -59,6 +52,7 @@ export class AllMemberLeaveCountsPage implements OnInit {
       return;
     }
     this.getAllApiUSerByMobile();
+    this.loadUsers();
   }
   get selectedMonthName() {
     return this.monthOptions.find(item => item.value === this.selectedMonth)?.name || '';
@@ -72,15 +66,7 @@ export class AllMemberLeaveCountsPage implements OnInit {
     return this.memberStats.filter(member => member.name === selectedName);
   }
 
-  get summaryTotals() {
-    return this.memberStats.reduce((totals, member) => {
-      totals.P += member.P;
-      totals.L += member.L;
-      totals.WFH += member.WFH;
-      totals.H += member.H;
-      return totals;
-    }, { P: 0, L: 0, WFH: 0, H: 0 });
-  }
+  
 
    getAllApiUSerByMobile() {
     const mobile = localStorage.getItem('mobile');
@@ -102,4 +88,156 @@ export class AllMemberLeaveCountsPage implements OnInit {
     localStorage.clear();
     this.router.navigate(['/login']);
   }
+
+  loadUsers() {
+
+  this.apiService.getUsers().subscribe({
+
+    next: (res: any) => {
+
+      this.users = res.data || res;
+
+      this.memberOptions = [
+        {
+          value: 'all',
+          label: 'All Members'
+        }
+      ];
+
+      this.users.forEach((user: any) => {
+
+        this.memberOptions.push({
+          value: user.mobile,
+          label: user.name
+        });
+
+      });
+
+      this.loadAttendanceData();
+
+    },
+
+    error: (err) => {
+      console.log(err);
+    }
+
+  });
+
+}
+
+loadAttendanceData() {
+
+  const year = new Date().getFullYear();
+
+  this.memberStats = [];
+
+  const selectedUsers =
+    this.selectedMember === 'all'
+      ? this.users
+      : this.users.filter(
+          u => u.mobile == this.selectedMember
+        );
+
+  selectedUsers.forEach((user: any) => {
+
+    this.apiService
+      .getUserAttendanceHistory(
+        user.mobile,
+        year,
+        this.selectedMonth
+      )
+      .subscribe({
+
+        next: (res: any) => {
+
+          const history = res.data || [];
+
+          const stat = {
+            name: user.name,
+            mobile: user.mobile,
+
+            G: 0,
+            L: 0,
+            WFH: 0,
+            DH: 0,
+            WO: 0,
+            O: 0
+          };
+
+          history.forEach((row: any) => {
+
+            switch (row.status) {
+
+              case 'G':
+                stat.G++;
+                break;
+
+              case 'L':
+                stat.L++;
+                break;
+
+              case 'WFH':
+                stat.WFH++;
+                break;
+
+              case 'DH':
+                stat.DH++;
+                break;
+
+              case 'WO':
+                stat.WO++;
+                break;
+
+              case 'O':
+                stat.O++;
+                break;
+            }
+
+          });
+
+          this.memberStats.push(stat);
+
+        },
+
+        error: (err) => {
+          console.log(err);
+        }
+
+      });
+
+  });
+
+}
+
+get summaryTotals() {
+
+  return this.memberStats.reduce(
+
+    (total, member) => {
+
+      total.G += member.G;
+      total.L += member.L;
+      total.WFH += member.WFH;
+      total.DH += member.DH;
+      total.WO += member.WO;
+      total.O += member.O;
+
+      return total;
+
+    },
+
+    {
+      G: 0,
+      L: 0,
+      WFH: 0,
+      DH: 0,
+      WO: 0,
+      O: 0
+    }
+
+  );
+
+}
+
+
 }

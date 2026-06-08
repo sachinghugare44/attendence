@@ -21,7 +21,7 @@ export class AdminDashboardPage implements OnInit {
       title: 'View Leave Counts',
       description: 'Track leave and attendance counts by month and member.',
       icon: 'calendar-number-outline',
-      route: '',
+      route: '/all-member-leave-counts',
       accent: 'teal'
     },
     {
@@ -59,11 +59,11 @@ export class AdminDashboardPage implements OnInit {
     
   }
   openRoute(route: string) {
-    if(route === ''){
-      alert('This feature is coming soon!');
-      return;
-    }
-    this.router.navigate([route]);
+    // if(route === ''){
+    //   alert('This feature is coming soon!');
+    //   return;
+    // }
+   return  this.router.navigate([route]);
   }
 
   getActivityIcon(state: string) {

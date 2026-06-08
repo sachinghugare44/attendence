@@ -67,56 +67,97 @@
   <section class="filter-bar">
     <ion-item lines="none" class="filter-card">
       <ion-icon name="calendar-outline" slot="start"></ion-icon>
-      <ion-select interface="popover" label="Month" label-placement="stacked" [(ngModel)]="selectedMonth">
+      <ion-select interface="popover" label="Month" label-placement="stacked" [(ngModel)]="selectedMonth"  (ionChange)="loadAttendanceData()">
         <ion-select-option *ngFor="let month of monthOptions" [value]="month.value">{{ month.value }} - {{ month.name }}</ion-select-option>
       </ion-select>
     </ion-item>
 
     <ion-item lines="none" class="filter-card">
       <ion-icon name="people-outline" slot="start"></ion-icon>
-      <ion-select interface="popover" label="Team Member" label-placement="stacked" [(ngModel)]="selectedMember">
+      <ion-select interface="popover" label="Team Member" label-placement="stacked" [(ngModel)]="selectedMember" (ionChange)="loadAttendanceData()">
         <ion-select-option *ngFor="let member of memberOptions" [value]="member.value">{{ member.label }}</ion-select-option>
       </ion-select>
     </ion-item>
   </section>
 
   <section class="summary-grid">
-    <ion-card class="summary-card present">
-      <ion-card-content>
-        <strong>{{ summaryTotals.P }}</strong>
-        <span>Present</span>
-      </ion-card-content>
-    </ion-card>
-    <ion-card class="summary-card leave">
-      <ion-card-content>
-        <strong>{{ summaryTotals.L }}</strong>
-        <span>Leave</span>
-      </ion-card-content>
-    </ion-card>
-    <ion-card class="summary-card wfh">
-      <ion-card-content>
-        <strong>{{ summaryTotals.WFH }}</strong>
-        <span>WFH</span>
-      </ion-card-content>
-    </ion-card>
-    <ion-card class="summary-card holiday">
-      <ion-card-content>
-        <strong>{{ summaryTotals.H }}</strong>
-        <span>Holiday</span>
-      </ion-card-content>
-    </ion-card>
-  </section>
 
-  <section class="member-table" *ngIf="selectedMember === 'all'">
-    <div class="table-header">
-      <span>Member</span><span>P</span><span>L</span><span>WFH</span><span>H</span>
-    </div>
-    <div class="table-row" *ngFor="let member of filteredMemberStats">
-      <span class="member-name">{{ member.name }}</span><span>{{ member.P }}</span><span>{{ member.L }}</span><span>{{ member.WFH }}</span><span>{{ member.H }}</span>
-    </div>
-  </section>
+  <ion-card class="summary-card present">
+    <ion-card-content>
+      <strong>{{summaryTotals.G}}</strong>
+      <span>Present</span>
+    </ion-card-content>
+  </ion-card>
 
-  <section class="member-cards" *ngIf="selectedMember !== 'all'">
+  <ion-card class="summary-card leave">
+    <ion-card-content>
+      <strong>{{summaryTotals.L}}</strong>
+      <span>Leave</span>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card class="summary-card wfh">
+    <ion-card-content>
+      <strong>{{summaryTotals.WFH}}</strong>
+      <span>WFH</span>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card class="summary-card holiday">
+    <ion-card-content>
+      <strong>{{summaryTotals.DH}}</strong>
+      <span>D Holiday</span>
+    </ion-card-content>
+  </ion-card>
+
+   <ion-card class="summary-card weekend">
+    <ion-card-content>
+      <strong>{{summaryTotals.WO}}</strong>
+      <span>Weekend</span>
+    </ion-card-content>
+  </ion-card>
+
+   <ion-card class="summary-card other">
+    <ion-card-content>
+      <strong>{{summaryTotals.O}}</strong>
+      <span>Other</span>
+    </ion-card-content>
+  </ion-card>
+
+</section>
+
+  <section class="member-table">
+
+  <div class="table-header">
+    <span>Member</span>
+    <span>P</span>
+    <span>L</span>
+    <span>WFH</span>
+    <span>DH</span>
+    <span>WO</span>
+    <span>O</span>
+  </div>
+
+  <div
+    class="table-row"
+    *ngFor="let member of memberStats">
+
+    <span class="member-name">
+      {{member.name}}
+    </span>
+
+    <span>{{member.G}}</span>
+    <span>{{member.L}}</span>
+    <span>{{member.WFH}}</span>
+    <span>{{member.DH}}</span>
+     <span>{{member.WO}}</span>
+      <span>{{member.O}}</span>
+
+  </div>
+
+</section>
+
+  <!-- <section class="member-cards" *ngIf="selectedMember !== 'all'">
     <article class="member-summary-card" *ngFor="let member of filteredMemberStats">
       <h3>{{ member.name }}</h3>
       <div class="stats-row">
@@ -126,5 +167,5 @@
         <div><strong>{{ member.H }}</strong><span>Holiday</span></div>
       </div>
     </article>
-  </section>
+  </section> -->
 </ion-content>
