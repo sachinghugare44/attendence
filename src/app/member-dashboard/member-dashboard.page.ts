@@ -4,6 +4,7 @@ import { ApiService } from '../services/api.service';
 import { from } from 'rxjs';
 import { concatMap, finalize, toArray } from 'rxjs/operators';
 import { ToastController } from '@ionic/angular';
+import { Geolocation } from '@capacitor/geolocation';
 
 const MONTHS = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -37,8 +38,14 @@ export class MemberDashboardPage implements OnInit {
   pendingHistoryMonth: number | null = null;
   modalStep: 'calendar' | 'status' = 'calendar';
   responseData: any;
+  isCheckingLocation = false;
+  locationDistanceMeters: number | null = null;
   private confettiTimer: number | null = null;
   monthold = false;
+
+  officeLat = 19.17438;
+  officeLng = 72.84473;
+  officeRadiusMeters = 500;
 
  statusOptions = [
     { label: 'WEEKOFF', value: 'WO', icon: 'bed-outline' },
@@ -92,9 +99,16 @@ export class MemberDashboardPage implements OnInit {
     });
   }
 
-  openMonthDetails(monthName: string, monthIndex: number) {
+  async openMonthDetails(monthName: string, monthIndex: number) {
     if (!this.isMonthAccessible(monthIndex)) {
       alert('You can only mark attendance for the current month.');
+      return;
+    }
+
+    const isEligible = await this.checkOfficeEligibility();
+    if (!isEligible) {
+      const distance = this.locationDistanceMeters !== null ? `${Math.round(this.locationDistanceMeters)} m` : 'unknown distance';
+      alert(`You are not near the office location. Current distance: ${distance}. Please move closer to mark attendance.`);
       return;
     }
 
@@ -104,6 +118,66 @@ export class MemberDashboardPage implements OnInit {
     this.selectionMode = 'single';
     this.modalStep = 'calendar';
     this.isAttendanceModalOpen = true;
+  }
+
+  private async checkOfficeEligibility(): Promise<boolean> {
+  this.isCheckingLocation = true;
+
+  try {
+    const position = await Geolocation.getCurrentPosition({
+      enableHighAccuracy: true
+    });
+
+    const currentLat = position.coords.latitude;
+    const currentLng = position.coords.longitude;
+
+    const distance = this.calculateDistanceMeters(
+      currentLat,
+      currentLng,
+      this.officeLat,
+      this.officeLng
+    );
+
+    this.locationDistanceMeters = distance;
+
+    // GPS reported accuracy in meters
+    const gpsAccuracy = position.coords.accuracy || 0;
+
+    // Fixed buffer to handle GPS fluctuations
+    const extraBuffer = 80;
+
+    // Final allowed radius
+    const allowedRadius =
+      this.officeRadiusMeters +
+      gpsAccuracy +
+      extraBuffer;
+
+    console.log('Distance:', distance);
+    console.log('Office Radius:', this.officeRadiusMeters);
+    console.log('GPS Accuracy:', gpsAccuracy);
+    console.log('Allowed Radius:', allowedRadius);
+
+    return distance <= allowedRadius;
+
+  } catch (error) {
+    console.error('Location check failed', error);
+    this.locationDistanceMeters = null;
+    return false;
+  } finally {
+    this.isCheckingLocation = false;
+  }
+}
+
+  private calculateDistanceMeters(lat1: number, lon1: number, lat2: number, lon2: number): number {
+    const toRadians = (degrees: number) => degrees * (Math.PI / 180);
+    const earthRadius = 6371000;
+    const dLat = toRadians(lat2 - lat1);
+    const dLon = toRadians(lon2 - lon1);
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+      + Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2))
+      * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return earthRadius * c;
   }
 
   closeAttendanceModal(resetMonth: boolean = true) {

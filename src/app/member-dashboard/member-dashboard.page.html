@@ -91,9 +91,11 @@
         <div class="month-label">{{ month.name }}</div>
         <div class="month-action-row">
           <button type="button" class="month-action-btn primary" 
-            (click)="openMonthDetails(month.name, month.index); $event.stopPropagation()">
-            <ion-icon name="checkmark-circle-outline"></ion-icon>
-            <span>Mark</span>
+            (click)="openMonthDetails(month.name, month.index); $event.stopPropagation()"
+            [disabled]="isCheckingLocation">
+            <ion-icon *ngIf="!isCheckingLocation" name="checkmark-circle-outline"></ion-icon>
+            <ion-spinner *ngIf="isCheckingLocation" name="crescent" slot="icon-only"></ion-spinner>
+            <span>{{ isCheckingLocation ? 'Checking...' : 'Mark' }}</span>
           </button>
           <button type="button" class="month-action-btn secondary"
             (click)="openMonthHistory(month.name, month.index, $event); $event.stopPropagation()">

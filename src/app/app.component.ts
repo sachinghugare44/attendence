@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { Geolocation } from '@capacitor/geolocation';
 
 @Component({
   selector: 'app-root',
@@ -6,6 +7,12 @@ import { Component } from '@angular/core';
   styleUrls: ['app.component.scss'],
   standalone: false,
 })
-export class AppComponent {
-  constructor() {}
+export class AppComponent implements OnInit {
+  constructor() {
+
+  }
+  async ngOnInit(): Promise<void> {
+  const position = await Geolocation.getCurrentPosition();
+  console.log('Current position:', position);
+  }
 }
