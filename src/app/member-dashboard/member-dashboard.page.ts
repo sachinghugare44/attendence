@@ -100,17 +100,17 @@ export class MemberDashboardPage implements OnInit {
   }
 
   async openMonthDetails(monthName: string, monthIndex: number) {
-    if (!this.isMonthAccessible(monthIndex)) {
-      alert('You can only mark attendance for the current month.');
-      return;
-    }
+    // if (!this.isMonthAccessible(monthIndex)) {
+    //   alert('You can only mark attendance for the current month.');
+    //   return;
+    // }
 
-    const isEligible = await this.checkOfficeEligibility();
-    if (!isEligible) {
-      const distance = this.locationDistanceMeters !== null ? `${Math.round(this.locationDistanceMeters)} m` : 'unknown distance';
-      alert(`You are not near the office location. Current distance: ${distance}. Please move closer to mark attendance.`);
-      return;
-    }
+    // const isEligible = await this.checkOfficeEligibility();
+    // if (!isEligible) {
+    //   const distance = this.locationDistanceMeters !== null ? `${Math.round(this.locationDistanceMeters)} m` : 'unknown distance';
+    //   alert(`You are not near the office location. Current distance: ${distance}. Please move closer to mark attendance.`);
+    //   return;
+    // }
 
     this.selectedMonthName = monthName;
     this.selectedMonthIndex = monthIndex;
@@ -364,6 +364,7 @@ export class MemberDashboardPage implements OnInit {
   logout() {
     localStorage.clear();
     this.router.navigate(['/login']);
+    this.presentToast('Logged out successfully!', 'success');
   }
 
   getBackgroundPosition(index: number): string {

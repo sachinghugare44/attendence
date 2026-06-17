@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApiService } from '../services/api.service';
+import { ToastController } from '@ionic/angular';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -40,7 +41,7 @@ export class AdminDashboardPage implements OnInit {
     { name: 'Priya Singh', status: 'Attendance pending review', state: 'pending', time: '1 hour ago' }
   ];
   responseData: any;
-  constructor(private router: Router, private apiService: ApiService) {}
+  constructor(private toastController: ToastController,private router: Router, private apiService: ApiService) {}
 
   ngOnInit(): void {
     this.getAllApiUSerByMobile();
@@ -89,5 +90,19 @@ export class AdminDashboardPage implements OnInit {
    logout() {
     localStorage.clear();
     this.router.navigate(['/login']);
+  this.presentToast('Logged out successfully!', 'success'); 
+ }
+
+  private async presentToast(message: string, color: 'success' | 'danger') {
+    const toast = await this.toastController.create({
+      message,
+      duration: 2200,
+      position: 'bottom',
+      color,
+      cssClass: 'auth-toast',
+      buttons: [{ text: 'Close', role: 'cancel' }]
+    });
+
+    await toast.present();
   }
 }
