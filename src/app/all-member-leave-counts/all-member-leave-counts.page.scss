@@ -284,6 +284,11 @@ ion-toolbar {
     }
 }
 
+.logout-btn ion-icon {
+  color: #fff;
+  font-size: 18px
+}
+
 .logout-btn {
   gap: 6px;
   border: 0;
@@ -296,7 +301,7 @@ ion-toolbar {
   cursor: pointer
 }
 
-.logout-btn ion-icon {
-  color: #fff;
-  font-size: 18px
+.logout-btn {
+  display: flex;
+  align-items: center
 }

@@ -13,6 +13,7 @@ export class AllMemberLeaveCountsPage implements OnInit {
   selectedMember = 'all';
   responseData  : any;
   memberStats: any[] = [];
+  userActivityPanel: any[] = [];
 
 users: any[] = [];
 
@@ -53,6 +54,7 @@ memberOptions: any[] = [
     }
     this.getAllApiUSerByMobile();
     this.loadUsers();
+    this.loadUserActivityPanel();
   }
   get selectedMonthName() {
     return this.monthOptions.find(item => item.value === this.selectedMonth)?.name || '';
@@ -239,5 +241,65 @@ get summaryTotals() {
 
 }
 
+loadUserActivityPanel() {
+  this.apiService.getUsers().subscribe({
+    next: (res: any) => {
+      const users = res.data || res;
+      const previousMonth = this.selectedMonth === 1 ? 12 : this.selectedMonth - 1;
+      const year = this.selectedMonth === 1 ? new Date().getFullYear() - 1 : new Date().getFullYear();
+      const activityData: any[] = [];
+
+      let completedRequests = 0;
+
+      users.forEach((user: any) => {
+        this.apiService.getUserAttendanceHistory(user.mobile, year, previousMonth).subscribe({
+          next: (historyRes: any) => {
+            const history = historyRes.data || [];
+            const leaveCount = history.filter((h: any) => 
+              h.status === 'WFH' || h.status === 'L' || h.status === 'O'
+            ).length;
+
+            const stars = this.calculateStarRating(leaveCount);
+            const status = leaveCount === 0 ? 'BEST' : 'GOOD';
+
+            activityData.push({
+              name: user.name,
+              mobile: user.mobile,
+              email: user.email,
+              image: user.profileImage || null,
+              leaveCount: leaveCount,
+              stars: stars,
+              status: status
+            });
+
+            completedRequests++;
+            if (completedRequests === users.length) {
+              this.userActivityPanel = activityData.sort((a, b) => b.stars - a.stars);
+            }
+          },
+          error: (err) => {
+            console.error(`Error fetching history for ${user.mobile}`, err);
+            completedRequests++;
+            if (completedRequests === users.length) {
+              this.userActivityPanel = activityData.sort((a, b) => b.stars - a.stars);
+            }
+          }
+        });
+      });
+    },
+    error: (err) => {
+      console.error('Error loading users', err);
+    }
+  });
+}
+
+calculateStarRating(leaveCount: number): number {
+  if (leaveCount === 0) {
+    return 5;
+  } else if (leaveCount >= 1) {
+    return 3;
+  }
+  return 3;
+}
 
 }

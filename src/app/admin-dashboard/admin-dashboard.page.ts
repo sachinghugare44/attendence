@@ -10,6 +10,9 @@ import { ToastController } from '@ionic/angular';
   standalone: false
 })
 export class AdminDashboardPage implements OnInit {
+  selectedMonth = new Date().getMonth() + 1;
+  userActivityPanel: any[] = [];
+  activityMonth = this.getPreviousMonthInfo();
   quickActions = [
     {
       title: 'Team Members Details',
@@ -45,6 +48,7 @@ export class AdminDashboardPage implements OnInit {
 
   ngOnInit(): void {
     this.getAllApiUSerByMobile();
+    this.loadUserActivityPanel();
     const mobile = localStorage.getItem('mobile');
     const password = localStorage.getItem('name');
     const usertype = localStorage.getItem('usertype');
@@ -105,4 +109,93 @@ export class AdminDashboardPage implements OnInit {
 
     await toast.present();
   }
+
+  
+loadUserActivityPanel() {
+  this.apiService.getUsers().subscribe({
+    next: (res: any) => {
+      const users = res.data || res;
+      const activityMonth = this.getPreviousMonthInfo();
+      this.activityMonth = activityMonth;
+      const activityData: any[] = [];
+
+      let completedRequests = 0;
+
+      users.forEach((user: any) => {
+        this.apiService.getUserAttendanceHistory(user.mobile, activityMonth.year, activityMonth.month).subscribe({
+          next: (historyRes: any) => {
+            const history = historyRes.data || [];
+            const hasAttendanceEntries = history.length > 0;
+            const leaveCount = history.filter((h: any) => h.status === 'L').length;
+
+            const stars = hasAttendanceEntries ? this.calculateStarRating(leaveCount) : 0;
+            const status = this.getPerformanceStatus(hasAttendanceEntries, leaveCount);
+
+            activityData.push({
+              name: user.name,
+              mobile: user.mobile,
+              email: user.email,
+              image: user.profileImage || null,
+              leaveCount: leaveCount,
+              stars: stars,
+              status: status,
+              hasAttendanceEntries: hasAttendanceEntries
+            });
+
+            completedRequests++;
+            if (completedRequests === users.length) {
+              this.userActivityPanel = activityData.sort((a, b) => b.stars - a.stars || a.name.localeCompare(b.name));
+            }
+          },
+          error: (err) => {
+            console.error(`Error fetching history for ${user.mobile}`, err);
+            completedRequests++;
+            if (completedRequests === users.length) {
+              this.userActivityPanel = activityData.sort((a, b) => b.stars - a.stars);
+            }
+          }
+        });
+      });
+    },
+    error: (err) => {
+      console.error('Error loading users', err);
+    }
+  });
+}
+
+calculateStarRating(leaveCount: number): number {
+  if (leaveCount === 0) {
+    return 5;
+  } else if (leaveCount === 1) {
+    return 4;
+  }
+  return 3;
+}
+
+getMoodEmoji(user: any) {
+  if (!user?.hasAttendanceEntries) {
+    return '😐';
+  }
+
+  return user.stars >= 4 ? '😊' : '☹️';
+}
+
+private getPerformanceStatus(hasAttendanceEntries: boolean, leaveCount: number) {
+  if (!hasAttendanceEntries) {
+    return 'HOLD';
+  }
+
+  return leaveCount === 0 ? 'BEST' : 'GOOD';
+}
+
+private getPreviousMonthInfo() {
+  const today = new Date();
+  const previousMonthDate = new Date(today.getFullYear(), this.selectedMonth - 2, 1);
+
+  return {
+    month: previousMonthDate.getMonth() + 1,
+    year: previousMonthDate.getFullYear(),
+    title: previousMonthDate.toLocaleString('en-US', { month: 'long', year: 'numeric' })
+  };
+}
 }

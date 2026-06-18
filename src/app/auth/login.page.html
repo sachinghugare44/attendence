@@ -35,8 +35,12 @@
                 <ion-item>
                   <ion-input formControlName="password" type="password" placeholder="Enter Password"></ion-input>
                 </ion-item>
-                <ion-button expand="block" type="submit" [disabled]="loginForm.invalid">
-                  Login
+                <ion-button expand="block" type="submit" [disabled]="loginForm.invalid || isLoginLoading">
+                  <span class="button-loader" *ngIf="isLoginLoading">
+                    <ion-spinner name="crescent"></ion-spinner>
+                    Logging in...
+                  </span>
+                  <span *ngIf="!isLoginLoading">Login</span>
                 </ion-button>
               </form>
 
@@ -125,8 +129,12 @@
                    <ion-item>
                     <ion-input (input)="onConfirmPasswordChange()" formControlName="confirmPassword" type="password" placeholder="Confirm Password"></ion-input>
                   </ion-item>
-                  <ion-button expand="block" type="submit" [disabled]="registerForm.invalid || registerForm.get('password')?.value !== registerForm.get('confirmPassword')?.value">
-                    Register
+                  <ion-button expand="block" type="submit" [disabled]="registerForm.invalid || registerForm.get('password')?.value !== registerForm.get('confirmPassword')?.value || isRegisterLoading">
+                    <span class="button-loader" *ngIf="isRegisterLoading">
+                      <ion-spinner name="crescent"></ion-spinner>
+                      Registering...
+                    </span>
+                    <span *ngIf="!isRegisterLoading">Register</span>
                   </ion-button>
                 </form>
               </div>

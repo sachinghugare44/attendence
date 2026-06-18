@@ -94,6 +94,18 @@ ion-button {
   font-weight: 700;
 }
 
+.button-loader {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.button-loader ion-spinner {
+  width: 18px;
+  height: 18px;
+}
+
 .smalldisplay{
   display:none;
 }

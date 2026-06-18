@@ -20,6 +20,8 @@ export class LoginPage {
   loginError: string = '';
   registerError: string = '';
   successMessage: string = '';
+  isLoginLoading: boolean = false;
+  isRegisterLoading: boolean = false;
   
   // OTP States
   otpSent: boolean = false;
@@ -72,6 +74,8 @@ export class LoginPage {
     this.loginError = '';
     this.registerError = '';
     this.successMessage = '';
+    this.isLoginLoading = false;
+    this.isRegisterLoading = false;
     this.otpSent = false;
     this.otpVerified = false;
     this.registerOtpSent = false;
@@ -91,8 +95,10 @@ export class LoginPage {
       password: this.loginForm.value.password
     };
 
+    this.isLoginLoading = true;
     this.apiService.validateUser(requestBody).subscribe({
       next: response => {
+        this.isLoginLoading = false;
         const responseData: any = response;
         this.presentToast('Login successful!', 'success');
         localStorage.setItem('mobile', requestBody.mobile);
@@ -108,6 +114,7 @@ export class LoginPage {
         }
       },
       error: error => {
+        this.isLoginLoading = false;
         this.loginError = error?.error?.message || 'Invalid credentials. Please try again.';
         this.presentToast(this.loginError, 'danger');
         // clear only the password on error for security
@@ -275,8 +282,10 @@ export class LoginPage {
     //   return;
     // }
 
+    this.isRegisterLoading = true;
     this.apiService.createUser(requestBody).subscribe({
       next: () => {
+        this.isRegisterLoading = false;
         this.successMessage = 'Registration successful! You can now login.';
         this.presentToast('Registration successful! You can now login.', 'success');
         this.registerForm.reset();
@@ -286,6 +295,7 @@ export class LoginPage {
         }, 1200);
       },
       error: error => {
+        this.isRegisterLoading = false;
         if (error?.error?.message && error.error.message.toLowerCase().includes('already')) {
           this.registerError = 'User already exists with these details.';
         } else {

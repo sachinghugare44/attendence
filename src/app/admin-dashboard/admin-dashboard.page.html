@@ -119,4 +119,56 @@
       </article>
     </div>
   </section> -->
+ <section class="activity-panel">
+    <div class="activity-header">
+      <p class="month-title">{{ activityMonth.title }}</p>
+      <h2>User Activity - Previous Month Performance</h2>
+      <p>Rating uses only leave status. Hold means no attendance entries found for this month.</p>
+    </div>
+
+    <div class="activity-list">
+      <div class="activity-row" *ngFor="let user of userActivityPanel">
+        <span class="row-mood" [attr.title]="user.status">{{ getMoodEmoji(user) }}</span>
+        <div class="user-info">
+          <div class="user-avatar">
+            <ion-icon *ngIf="!user.image" name="person-circle-outline" class="avatar-icon"></ion-icon>
+            <img *ngIf="user.image" [src]="user.image" alt="{{ user.name }}" class="avatar-image">
+          </div>
+          <div class="user-details">
+            <h3 class="user-name">{{ user.name }}</h3>
+            <p class="user-mobile">{{ user.mobile }}</p>
+          </div>
+        </div>
+
+        <div class="user-stats">
+          <!-- <span class="leave-count">
+            <strong>{{ user.leaveCount }}</strong>
+            <small>leaves</small>
+          </span> -->
+          <span class="status-badge" [ngClass]="user.status.toLowerCase()">
+            {{ user.status }}
+          </span>
+        </div>
+
+        <div class="user-rating">
+          <div class="stars">
+            <ion-icon 
+              *ngFor="let star of [1,2,3,4,5]" 
+              [name]="star <= user.stars ? 'star' : 'star-outline'"
+              [class.filled]="star <= user.stars && user.hasAttendanceEntries"
+              [class.blink]="star <= user.stars && user.hasAttendanceEntries"
+              class="star-icon">
+            </ion-icon>
+          </div>
+          <span class="rating-text">
+            {{ user.hasAttendanceEntries ? (user.stars + '/5') : 'No rating' }}
+          </span>
+        </div>
+      </div>
+
+      <div *ngIf="userActivityPanel.length === 0" class="no-data">
+        Loading user activity data...
+      </div>
+    </div>
+  </section>
 </ion-content>
