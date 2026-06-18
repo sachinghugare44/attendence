@@ -25,7 +25,7 @@
             <ion-text color="danger" *ngIf="loginError" class="error-message">{{ loginError }}</ion-text>
             <ion-text color="danger" *ngIf="registerError" class="error-message">{{ registerError }}</ion-text>
             <ion-text color="success" *ngIf="successMessage" class="success-message">{{ successMessage }}</ion-text>
-
+            <ion-text color="danger" *ngIf="showerror" class="error-message">Passwords do not match</ion-text>
             <ion-card-content>
               <!-- PASSWORD LOGIN -->
               <form *ngIf="authMode === 'password-login'" [formGroup]="loginForm" (ngSubmit)="onLogin()">
@@ -109,7 +109,7 @@
 
                 <!-- Step 2: Complete Registration -->
                 <form  [formGroup]="registerForm" (ngSubmit)="onRegister()">
-                  <h3 style="text-align: center; margin-bottom: 1rem;">Complete Registration</h3>
+                  <!-- <h3 style="text-align: center; margin-bottom: 1rem;">Complete Registration</h3> -->
                   <ion-item>
                     <ion-input formControlName="name" type="text" placeholder="Enter Name"></ion-input>
                   </ion-item>
@@ -122,7 +122,10 @@
                   <ion-item>
                     <ion-input formControlName="password" type="password" placeholder="Enter Password"></ion-input>
                   </ion-item>
-                  <ion-button expand="block" type="submit" [disabled]="registerForm.invalid">
+                   <ion-item>
+                    <ion-input (input)="onConfirmPasswordChange()" formControlName="confirmPassword" type="password" placeholder="Confirm Password"></ion-input>
+                  </ion-item>
+                  <ion-button expand="block" type="submit" [disabled]="registerForm.invalid || registerForm.get('password')?.value !== registerForm.get('confirmPassword')?.value">
                     Register
                   </ion-button>
                 </form>

@@ -4,9 +4,9 @@
 
 export const environment = {
   production: false,
-   apiUrl: 'https://leelavati-backend.onrender.com',
+  //  apiUrl: 'https://leelavati-backend.onrender.com',
   // serverBaseUrl:'https://carudyog.com/api',
-  // apiUrl: 'http://localhost:5000',
+  apiUrl: 'http://localhost:5000',
 };
 
 /*

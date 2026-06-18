@@ -31,7 +31,7 @@ export class LoginPage {
   registerEmailVerified: boolean = false;
   isLoadingRegisterOtp: boolean = false;
   registerMobileNumber: string = '';
-
+  showerror: boolean = false;
   constructor(
     private fb: FormBuilder,
     private apiService: ApiService,
@@ -40,7 +40,7 @@ export class LoginPage {
   ) {
     this.loginForm = this.fb.group({
       username: ['', Validators.required],
-      password: ['', Validators.required]
+      password: ['', Validators.required],
     });
     this.otpLoginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -51,7 +51,8 @@ export class LoginPage {
       name: ['', Validators.required],
       mobile: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
+      password: ['', [Validators.required, Validators.minLength(9)]],
+      confirmPassword: ['', [Validators.required, Validators.minLength(9)]]
     });
     this.registerOtpForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -259,15 +260,14 @@ export class LoginPage {
       this.registerForm.markAllAsTouched();
       return;
     }
-
+   const usertypevalue = Math.floor(1000 + Math.random() * 9000).toString();
     const requestBody = {
       email: this.registerForm.value.email,
       name: this.registerForm.value.name,
       password: this.registerForm.value.password,
       mobile: this.registerForm.value.mobile,
-      usertype:1
+      usertype: usertypevalue
     };
-
     // Only allow register if email is verified
     // if (!this.registerEmailVerified) {
     //   this.registerError = 'Please verify your email first';
@@ -319,5 +319,18 @@ export class LoginPage {
     });
 
     await toast.present();
+  }
+
+  onConfirmPasswordChange() {
+    const password = this.registerForm.get('password')?.value;
+    const confirmPassword = this.registerForm.get('confirmPassword')?.value;
+
+    if (password !== confirmPassword) {
+      this.registerForm.get('confirmPassword')?.setErrors({ mismatch: true });
+      this.showerror = true;
+    } else {
+      this.registerForm.get('confirmPassword')?.setErrors(null);
+      this.showerror = false;
+    }
   }
 }
