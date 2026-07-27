@@ -309,15 +309,23 @@ statusOptions = [
   }
 
   getDayShortName(dateValue: string) {
-    return dateValue ? new Date(dateValue).toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase() : '';
+    const d = new Date(dateValue);
+
+  return d.toLocaleDateString('en-US', {
+    weekday: 'short',
+    timeZone: 'UTC'
+  });
   }
 
   getDisplayDate(dateValue: string) {
-    return dateValue ? new Date(dateValue).toLocaleDateString('en-IN', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric'
-    }) : '';
+     const d = new Date(dateValue);
+
+  return d.toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: '2-digit',
+    year: '2-digit',
+    timeZone: 'UTC'
+  });
   }
 
   getStatusLabel(status: string) {
