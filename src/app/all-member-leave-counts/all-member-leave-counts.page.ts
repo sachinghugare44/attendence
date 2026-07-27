@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../services/api.service';
 import { Router } from '@angular/router';
-
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 @Component({
   selector: 'app-all-member-leave-counts',
   templateUrl: './all-member-leave-counts.page.html',
@@ -302,4 +303,86 @@ calculateStarRating(leaveCount: number): number {
   return 3;
 }
 
+exportToExcel() {
+
+  const workbook = XLSX.utils.book_new();
+
+  // Summary Data
+  const summary = [
+    ["Attendance Report"],
+    [],
+    ["Month", this.selectedMonthName],
+    [
+      "Present",
+      this.summaryTotals.G,
+      "Leave",
+      this.summaryTotals.L,
+      "WFH",
+      this.summaryTotals.WFH,
+      "Holiday",
+      this.summaryTotals.DH,
+      "Weekend",
+      this.summaryTotals.WO,
+      "Other",
+      this.summaryTotals.O
+    ],
+    []
+  ];
+
+  // Table Header
+  const table = [
+    ["Member", "Present", "Leave", "WFH", "Holiday", "Weekend", "Other"]
+  ];
+
+  // Table Rows
+  this.memberStats.forEach(m => {
+
+    table.push([
+      m.name,
+      m.G,
+      m.L,
+      m.WFH,
+      m.DH,
+      m.WO,
+      m.O
+    ]);
+
+  });
+
+  const data = [...summary, ...table];
+
+  const worksheet = XLSX.utils.aoa_to_sheet(data);
+
+  // Column Width
+  worksheet["!cols"] = [
+    { wch: 30 },
+    { wch: 12 },
+    { wch: 12 },
+    { wch: 12 },
+    { wch: 12 },
+    { wch: 12 },
+    { wch: 12 }
+  ];
+
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Attendance");
+
+  const excelBuffer = XLSX.write(workbook, {
+    bookType: "xlsx",
+    type: "array"
+  });
+
+  const blob = new Blob(
+    [excelBuffer],
+    {
+      type:
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    }
+  );
+
+  saveAs(
+    blob,
+    `Attendance_${this.selectedMonthName}_${new Date().getFullYear()}.xlsx`
+  );
+
+}
 }

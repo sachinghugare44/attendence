@@ -157,6 +157,15 @@
 
 </section>
 
+<section>
+  <div style="display:flex;justify-content:flex-end;padding:15px;">
+  <ion-button color="success" (click)="exportToExcel()">
+    <ion-icon slot="start" name="download-outline"></ion-icon>
+    Export Excel
+  </ion-button>
+</div>
+</section>
+
   <!-- <section class="member-cards" *ngIf="selectedMember !== 'all'">
     <article class="member-summary-card" *ngFor="let member of filteredMemberStats">
       <h3>{{ member.name }}</h3>
