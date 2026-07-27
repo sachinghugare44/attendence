@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../services/api.service';
 import { Router } from '@angular/router';
-import * as XLSX from 'xlsx';
+import * as ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
+
+
 @Component({
   selector: 'app-all-member-leave-counts',
   templateUrl: './all-member-leave-counts.page.html',
@@ -303,86 +305,216 @@ calculateStarRating(leaveCount: number): number {
   return 3;
 }
 
-exportToExcel() {
+async exportToExcel() {
 
-  const workbook = XLSX.utils.book_new();
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet('Attendance Report');
 
-  // Summary Data
+  worksheet.properties.defaultRowHeight = 25;
+
+  // Title
+  worksheet.mergeCells('A1:G1');
+
+  const title = worksheet.getCell('A1');
+  title.value = 'Attendance Dashboard Report';
+  title.font = {
+    size: 20,
+    bold: true,
+    color: { argb: 'FFFFFFFF' }
+  };
+
+  title.alignment = {
+    horizontal: 'center',
+    vertical: 'middle'
+  };
+
+  title.fill = {
+    type: 'pattern',
+    pattern: 'solid',
+    fgColor: { argb: '1F4E78' }
+  };
+
+  worksheet.getRow(1).height = 35;
+
+  // Filters
+  worksheet.getCell('A3').value = 'Month';
+  worksheet.getCell('B3').value = this.selectedMonthName;
+
+  worksheet.getCell('D3').value = 'Member';
+
+  worksheet.getCell('E3').value =
+    this.selectedMember == 'all'
+      ? 'All Members'
+      : this.memberOptions.find(x => x.value == this.selectedMember)?.label;
+
+  // Summary Row
+
   const summary = [
-    ["Attendance Report"],
-    [],
-    ["Month", this.selectedMonthName],
-    [
-      "Present",
-      this.summaryTotals.G,
-      "Leave",
-      this.summaryTotals.L,
-      "WFH",
-      this.summaryTotals.WFH,
-      "Holiday",
-      this.summaryTotals.DH,
-      "Weekend",
-      this.summaryTotals.WO,
-      "Other",
-      this.summaryTotals.O
-    ],
-    []
+    {
+      text: 'Present',
+      value: this.summaryTotals.G,
+      color: '00B050'
+    },
+    {
+      text: 'Leave',
+      value: this.summaryTotals.L,
+      color: 'ED7D31'
+    },
+    {
+      text: 'WFH',
+      value: this.summaryTotals.WFH,
+      color: '5B9BD5'
+    },
+    {
+      text: 'Holiday',
+      value: this.summaryTotals.DH,
+      color: 'FFC000'
+    },
+    {
+      text: 'Weekend',
+      value: this.summaryTotals.WO,
+      color: '9E480E'
+    },
+    {
+      text: 'Other',
+      value: this.summaryTotals.O,
+      color: 'E83E8C'
+    }
   ];
+
+  let col = 1;
+
+  summary.forEach(item => {
+
+    worksheet.mergeCells(5, col, 6, col);
+
+    const cell = worksheet.getCell(5, col);
+
+    cell.value = item.text + '\n' + item.value;
+
+    cell.font = {
+      bold: true,
+      color: { argb: 'FFFFFFFF' },
+      size: 14
+    };
+
+    cell.alignment = {
+      horizontal: 'center',
+      vertical: 'middle',
+      wrapText: true
+    };
+
+    cell.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: item.color }
+    };
+
+    cell.border = {
+      top: { style: 'thin' },
+      left: { style: 'thin' },
+      right: { style: 'thin' },
+      bottom: { style: 'thin' }
+    };
+
+    worksheet.getColumn(col).width = 18;
+
+    col++;
+
+  });
 
   // Table Header
-  const table = [
-    ["Member", "Present", "Leave", "WFH", "Holiday", "Weekend", "Other"]
+
+  const headerRow = worksheet.addRow([]);
+
+  // headerRow.number = 8;
+
+  worksheet.getRow(8).values = [
+    'Member',
+    'Present',
+    'Leave',
+    'WFH',
+    'Holiday',
+    'Weekend',
+    'Other'
   ];
 
-  // Table Rows
-  this.memberStats.forEach(m => {
+  worksheet.getRow(8).eachCell(cell => {
 
-    table.push([
-      m.name,
-      m.G,
-      m.L,
-      m.WFH,
-      m.DH,
-      m.WO,
-      m.O
+    cell.font = {
+      bold: true,
+      color: { argb: 'FFFFFFFF' }
+    };
+
+    cell.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: '4472C4' }
+    };
+
+    cell.alignment = {
+      horizontal: 'center'
+    };
+
+    cell.border = {
+      top: { style: 'thin' },
+      bottom: { style: 'thin' },
+      left: { style: 'thin' },
+      right: { style: 'thin' }
+    };
+
+  });
+
+  // Table Data
+
+  this.memberStats.forEach(member => {
+
+    const row = worksheet.addRow([
+      member.name,
+      member.G,
+      member.L,
+      member.WFH,
+      member.DH,
+      member.WO,
+      member.O
     ]);
 
+    row.eachCell(cell => {
+
+      cell.alignment = {
+        horizontal: 'center'
+      };
+
+      cell.border = {
+        top: { style: 'thin' },
+        left: { style: 'thin' },
+        right: { style: 'thin' },
+        bottom: { style: 'thin' }
+      };
+
+    });
+
   });
 
-  const data = [...summary, ...table];
+  worksheet.autoFilter = {
+    from: 'A8',
+    to: 'G8'
+  };
 
-  const worksheet = XLSX.utils.aoa_to_sheet(data);
-
-  // Column Width
-  worksheet["!cols"] = [
-    { wch: 30 },
-    { wch: 12 },
-    { wch: 12 },
-    { wch: 12 },
-    { wch: 12 },
-    { wch: 12 },
-    { wch: 12 }
+  worksheet.views = [
+    {
+      state: 'frozen',
+      ySplit: 8
+    }
   ];
 
-  XLSX.utils.book_append_sheet(workbook, worksheet, "Attendance");
-
-  const excelBuffer = XLSX.write(workbook, {
-    bookType: "xlsx",
-    type: "array"
-  });
-
-  const blob = new Blob(
-    [excelBuffer],
-    {
-      type:
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    }
-  );
+  const buffer = await workbook.xlsx.writeBuffer();
 
   saveAs(
-    blob,
-    `Attendance_${this.selectedMonthName}_${new Date().getFullYear()}.xlsx`
+    new Blob([buffer]),
+    `Attendance_${this.selectedMonthName}.xlsx`
   );
 
 }
+
 }
