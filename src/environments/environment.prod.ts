@@ -1,4 +1,12 @@
+declare global {
+  interface Window {
+    __env?: {
+      apiUrl?: string;
+    };
+  }
+}
+
 export const environment = {
   production: true,
-  apiUrl: 'https://leelavati-backend.onrender.com'
+  apiUrl: window.__env?.apiUrl || 'https://leelavati-backend.onrender.com'
 };

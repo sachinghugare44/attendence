@@ -2,9 +2,17 @@
 // `ng build` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
+declare global {
+  interface Window {
+    __env?: {
+      apiUrl?: string;
+    };
+  }
+}
+
 export const environment = {
   production: false,
-   apiUrl: 'https://leelavati-backend.onrender.com',
+  apiUrl: window.__env?.apiUrl || 'https://leelavati-backend.onrender.com',
   // serverBaseUrl:'https://carudyog.com/api',
   // apiUrl: 'http://localhost:5000',
 };
