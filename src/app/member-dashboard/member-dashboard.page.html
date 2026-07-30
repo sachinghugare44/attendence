@@ -144,13 +144,11 @@
 
           <ion-datetime presentation="date" [min]="selectedMonthIndex ? getMonthMinDate(selectedMonthIndex) : undefined"
             [max]="selectedMonthIndex ? getMonthMaxDate(selectedMonthIndex) : undefined"
-            [value]="selectionMode === 'multiple' ? selectedCalendarDate : selectedDateStr"
+            [multiple]="selectionMode === 'multiple'"
+            [value]="selectionMode === 'multiple' ? selectedDates : selectedDateStr"
             (ionChange)="onDateChange($event)"></ion-datetime>
 
           <div class="multi-date-actions" *ngIf="selectionMode === 'multiple'">
-            <ion-button expand="block" fill="outline" (click)="addSelectedDate()" [disabled]="!selectedCalendarDate">
-              Add Date
-            </ion-button>
             <ion-button expand="block" (click)="goToStatusStep()" [disabled]="!selectedDates.length">
               Go Status
             </ion-button>

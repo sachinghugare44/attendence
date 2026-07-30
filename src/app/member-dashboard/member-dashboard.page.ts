@@ -40,6 +40,9 @@ export class MemberDashboardPage implements OnInit {
   responseData: any;
   isCheckingLocation = false;
   locationDistanceMeters: number | null = null;
+  disabledAttendanceDates: string[] = [];
+  attendanceHistoryForMonth: any[] = [];
+  isLoadingAttendanceHistory = false;
   private confettiTimer: number | null = null;
   monthold = false;
 
@@ -115,9 +118,18 @@ export class MemberDashboardPage implements OnInit {
     this.selectedMonthName = monthName;
     this.selectedMonthIndex = monthIndex;
     this.resetSelection();
-    this.selectionMode = 'single';
-    this.modalStep = 'calendar';
+    this.disabledAttendanceDates = [];
+    this.attendanceHistoryForMonth = [];
     this.isAttendanceModalOpen = true;
+    await this.loadAttendanceHistoryForMonth();
+
+    if (this.hasExistingWeekOffSelectionForCurrentMonth()) {
+      this.closeAttendanceModal(false);
+      this.presentToast('Week-off already submitted for this month.', 'success');
+      return;
+    }
+
+    this.prepareDefaultWeekendSelection();
   }
 
   private async checkOfficeEligibility(): Promise<boolean> {
@@ -230,15 +242,24 @@ export class MemberDashboardPage implements OnInit {
       return;
     }
 
-    const rawValue = event.detail.value as string;
-    const dateValue = rawValue.split('T')[0];
-    const date = new Date(dateValue);
-
     if (this.selectionMode === 'multiple') {
-      this.selectedCalendarDate = dateValue;
+      const values = Array.isArray(event.detail.value)
+        ? event.detail.value
+        : [event.detail.value as string];
+
+      this.selectedDates = values
+        .map((value: string) => value.split('T')[0])
+        .sort();
+      this.selectedDatesDisplay = this.selectedDates.map((dateValue) => this.formatDate(dateValue));
+      this.selectedCalendarDate = null;
+      this.selectedDateStr = null;
+      this.selectedDateDisplay = '';
+      this.selectedDayName = '';
       return;
     }
 
+    const rawValue = event.detail.value as string;
+    const dateValue = rawValue.split('T')[0];
     this.setSingleDate(dateValue);
     this.modalStep = 'status';
   }
@@ -266,16 +287,7 @@ export class MemberDashboardPage implements OnInit {
   }
 
   addSelectedDate() {
-    if (!this.selectedCalendarDate || this.selectedDates.includes(this.selectedCalendarDate)) {
-      return;
-    }
-
-    this.selectedDates = [...this.selectedDates, this.selectedCalendarDate].sort();
-    this.selectedDatesDisplay = this.selectedDates.map((dateValue) => this.formatDate(dateValue));
-    this.selectedCalendarDate = null;
-    this.selectedDateStr = null;
-    this.selectedDateDisplay = '';
-    this.selectedDayName = '';
+    return;
   }
 
   removeSelectedDate(dateValue: string) {
@@ -390,6 +402,71 @@ export class MemberDashboardPage implements OnInit {
     this.status = '';
     this.remark = '';
     this.modalStep = 'calendar';
+  }
+
+  private prepareDefaultWeekendSelection() {
+    this.selectionMode = 'multiple';
+    this.status = 'WO';
+    this.remark = '';
+    const allWeekendDates = this.getWeekendDatesForSelectedMonth();
+    this.selectedDates = allWeekendDates.filter((dateValue) => !this.disabledAttendanceDates.includes(dateValue));
+    this.selectedDatesDisplay = this.selectedDates.map((dateValue) => this.formatDate(dateValue));
+    this.selectedCalendarDate = null;
+    this.selectedDateStr = null;
+    this.selectedDateDisplay = '';
+    this.selectedDayName = '';
+    this.modalStep = 'status';
+  }
+
+  private getWeekendDatesForSelectedMonth(): string[] {
+    if (!this.selectedMonthIndex) {
+      return [];
+    }
+
+    const year = new Date().getFullYear();
+    const daysInMonth = new Date(year, this.selectedMonthIndex, 0).getDate();
+    const dates: string[] = [];
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      const date = new Date(year, this.selectedMonthIndex - 1, day);
+      const dayOfWeek = date.getDay();
+
+      if (dayOfWeek === 0 || dayOfWeek === 6) {
+        const monthPart = (this.selectedMonthIndex).toString().padStart(2, '0');
+        const dayPart = day.toString().padStart(2, '0');
+        dates.push(`${year}-${monthPart}-${dayPart}`);
+      }
+    }
+
+    return dates;
+  }
+
+  private async loadAttendanceHistoryForMonth() {
+    const mobile = localStorage.getItem('mobile');
+    if (!mobile || !this.selectedMonthIndex) {
+      return;
+    }
+
+    this.isLoadingAttendanceHistory = true;
+    this.apiService.getUserAttendanceHistory(mobile, new Date().getFullYear(), this.selectedMonthIndex).subscribe({
+      next: (response: any) => {
+        const history = Array.isArray(response?.data) ? response.data : [];
+        this.attendanceHistoryForMonth = history;
+        this.disabledAttendanceDates = history
+          .map((item: any) => item?.date)
+          .filter((value: string | undefined): value is string => Boolean(value));
+        this.isLoadingAttendanceHistory = false;
+      },
+      error: () => {
+        this.attendanceHistoryForMonth = [];
+        this.disabledAttendanceDates = [];
+        this.isLoadingAttendanceHistory = false;
+      }
+    });
+  }
+
+  private hasExistingWeekOffSelectionForCurrentMonth(): boolean {
+    return this.attendanceHistoryForMonth.some((item: any) => item?.status === 'WO');
   }
 
   private setSingleDate(dateValue: string) {

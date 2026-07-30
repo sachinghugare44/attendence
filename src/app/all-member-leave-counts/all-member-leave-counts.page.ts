@@ -17,11 +17,11 @@ export class AllMemberLeaveCountsPage implements OnInit {
   responseData  : any;
   memberStats: any[] = [];
   userActivityPanel: any[] = [];
+  attendanceHistories: Record<string, any[]> = {};
+  users: any[] = [];
 
-users: any[] = [];
-
-memberOptions: any[] = [
-];
+  memberOptions: any[] = [
+  ];
   monthOptions = [
     { value: 1, label: 'Jan', name: 'January' },
     { value: 2, label: 'Feb', name: 'February' },
@@ -200,12 +200,14 @@ loadAttendanceData() {
 
           });
 
+          this.attendanceHistories[user.mobile] = history;
           this.memberStats.push(stat);
 
         },
 
         error: (err) => {
           console.log(err);
+          this.attendanceHistories[user.mobile] = [];
         }
 
       });
@@ -307,214 +309,172 @@ calculateStarRating(leaveCount: number): number {
 
 async exportToExcel() {
 
-  const workbook = new ExcelJS.Workbook();
-  const worksheet = workbook.addWorksheet('Attendance Report');
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Attendance Report');
 
-  worksheet.properties.defaultRowHeight = 25;
+    worksheet.properties.defaultRowHeight = 25;
 
-  // Title
-  worksheet.mergeCells('A1:G1');
+    const selectedUsers =
+      this.selectedMember === 'all'
+        ? this.users
+        : this.users.filter(u => u.mobile == this.selectedMember);
 
-  const title = worksheet.getCell('A1');
-  title.value = 'Attendance Dashboard Report';
-  title.font = {
-    size: 20,
-    bold: true,
-    color: { argb: 'FFFFFFFF' }
-  };
+    const memberHeaders = selectedUsers.map(user => user.name);
+    const dateRows = this.getMonthDates(this.selectedMonth);
 
-  title.alignment = {
-    horizontal: 'center',
-    vertical: 'middle'
-  };
-
-  title.fill = {
-    type: 'pattern',
-    pattern: 'solid',
-    fgColor: { argb: '1F4E78' }
-  };
-
-  worksheet.getRow(1).height = 35;
-
-  // Filters
-  worksheet.getCell('A3').value = 'Month';
-  worksheet.getCell('B3').value = this.selectedMonthName;
-
-  worksheet.getCell('D3').value = 'Member';
-
-  worksheet.getCell('E3').value =
-    this.selectedMember == 'all'
-      ? 'All Members'
-      : this.memberOptions.find(x => x.value == this.selectedMember)?.label;
-
-  // Summary Row
-
-  const summary = [
-    {
-      text: 'Present',
-      value: this.summaryTotals.G,
-      color: '00B050'
-    },
-    {
-      text: 'Leave',
-      value: this.summaryTotals.L,
-      color: 'ED7D31'
-    },
-    {
-      text: 'WFH',
-      value: this.summaryTotals.WFH,
-      color: '5B9BD5'
-    },
-    {
-      text: 'Holiday',
-      value: this.summaryTotals.DH,
-      color: 'FFC000'
-    },
-    {
-      text: 'Weekend',
-      value: this.summaryTotals.WO,
-      color: '9E480E'
-    },
-    {
-      text: 'Other',
-      value: this.summaryTotals.O,
-      color: 'E83E8C'
-    }
-  ];
-
-  let col = 1;
-
-  summary.forEach(item => {
-
-    worksheet.mergeCells(5, col, 6, col);
-
-    const cell = worksheet.getCell(5, col);
-
-    cell.value = item.text + '\n' + item.value;
-
-    cell.font = {
-      bold: true,
-      color: { argb: 'FFFFFFFF' },
-      size: 14
+    worksheet.mergeCells('A1', String.fromCharCode(67 + memberHeaders.length) + '1');
+    const title = worksheet.getCell('A1');
+    title.value = 'Attendance Report';
+    title.font = {
+      size: 20,
+      bold: true
     };
-
-    cell.alignment = {
+    title.alignment = {
       horizontal: 'center',
-      vertical: 'middle',
-      wrapText: true
+      vertical: 'middle'
     };
+    worksheet.getRow(1).height = 30;
 
-    cell.fill = {
-      type: 'pattern',
-      pattern: 'solid',
-      fgColor: { argb: item.color }
-    };
+    worksheet.getCell('A3').value = 'Month';
+    worksheet.getCell('B3').value = this.selectedMonthName;
+    worksheet.getCell('A4').value = 'Member Filter';
+    worksheet.getCell('B4').value =
+      this.selectedMember == 'all'
+        ? 'All Members'
+        : this.memberOptions.find(x => x.value == this.selectedMember)?.label;
 
-    cell.border = {
-      top: { style: 'thin' },
-      left: { style: 'thin' },
-      right: { style: 'thin' },
-      bottom: { style: 'thin' }
-    };
+    worksheet.getCell('D3').value = 'Generated On';
+    worksheet.getCell('E3').value = new Date().toLocaleDateString('en-GB');
 
-    worksheet.getColumn(col).width = 18;
-
-    col++;
-
-  });
-
-  // Table Header
-
-  const headerRow = worksheet.addRow([]);
-
-  // headerRow.number = 8;
-
-  worksheet.getRow(8).values = [
-    'Member',
-    'Present',
-    'Leave',
-    'WFH',
-    'Holiday',
-    'Weekend',
-    'Other'
-  ];
-
-  worksheet.getRow(8).eachCell(cell => {
-
-    cell.font = {
-      bold: true,
-      color: { argb: 'FFFFFFFF' }
-    };
-
-    cell.fill = {
-      type: 'pattern',
-      pattern: 'solid',
-      fgColor: { argb: '4472C4' }
-    };
-
-    cell.alignment = {
-      horizontal: 'center'
-    };
-
-    cell.border = {
-      top: { style: 'thin' },
-      bottom: { style: 'thin' },
-      left: { style: 'thin' },
-      right: { style: 'thin' }
-    };
-
-  });
-
-  // Table Data
-
-  this.memberStats.forEach(member => {
-
-    const row = worksheet.addRow([
-      member.name,
-      member.G,
-      member.L,
-      member.WFH,
-      member.DH,
-      member.WO,
-      member.O
-    ]);
-
-    row.eachCell(cell => {
-
-      cell.alignment = {
-        horizontal: 'center'
-      };
-
-      cell.border = {
-        top: { style: 'thin' },
-        left: { style: 'thin' },
-        right: { style: 'thin' },
-        bottom: { style: 'thin' }
-      };
-
+    worksheet.getCell('A6').value = 'Date';
+    worksheet.getCell('B6').value = 'Day';
+    memberHeaders.forEach((name, index) => {
+      worksheet.getCell(6, index + 3).value = name;
     });
 
-  });
+    worksheet.getRow(6).eachCell(cell => {
+      cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+      cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '4472C4' } };
+      cell.alignment = { horizontal: 'center', vertical: 'middle' };
+      cell.border = {
+        top: { style: 'thin' },
+        bottom: { style: 'thin' },
+        left: { style: 'thin' },
+        right: { style: 'thin' }
+      };
+    });
 
-  worksheet.autoFilter = {
-    from: 'A8',
-    to: 'G8'
-  };
+    dateRows.forEach((dateObj, rowIndex) => {
+      const rowIndexInSheet = 7 + rowIndex;
+      const rowValues = [dateObj.dateLabel, dateObj.dayLabel];
 
-  worksheet.views = [
-    {
-      state: 'frozen',
-      ySplit: 8
+      selectedUsers.forEach(user => {
+        const history = this.attendanceHistories[user.mobile] || [];
+        const attendanceForDate = history.find((item: any) => {
+          const normalizedItemDate = this.normalizeAttendanceDate(item.date);
+          return normalizedItemDate === dateObj.dateValue;
+        });
+
+        if (!attendanceForDate && (dateObj.dayLabel === 'Saturday' || dateObj.dayLabel === 'Sunday')) {
+          rowValues.push('Holiday');
+        } else {
+          rowValues.push(this.mapStatusLabel(attendanceForDate?.status));
+        }
+      });
+
+      const row = worksheet.addRow(rowValues);
+      row.eachCell(cell => {
+        cell.alignment = { horizontal: 'center', vertical: 'middle' };
+        cell.border = {
+          top: { style: 'thin' },
+          bottom: { style: 'thin' },
+          left: { style: 'thin' },
+          right: { style: 'thin' }
+        };
+      });
+    });
+
+    worksheet.columns = [
+      { width: 18 },
+      { width: 14 },
+      ...memberHeaders.map(() => ({ width: 18 }))
+    ];
+
+    worksheet.views = [
+      {
+        state: 'frozen',
+        ySplit: 6
+      }
+    ];
+
+    const buffer = await workbook.xlsx.writeBuffer();
+    saveAs(new Blob([buffer]), `Attendance_${this.selectedMonthName}.xlsx`);
+  }
+
+  private getMonthDates(month: number): { dateValue: string; dateLabel: string; dayLabel: string }[] {
+    const year = new Date().getFullYear();
+    const daysInMonth = new Date(year, month, 0).getDate();
+    const dates: { dateValue: string; dateLabel: string; dayLabel: string }[] = [];
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      const date = new Date(year, month - 1, day);
+      const dateValue = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      const dateLabel = `${String(day).padStart(2, '0')}-${String(month).padStart(2, '0')}-${String(year).slice(-2)}`;
+      const dayLabel = date.toLocaleDateString('en-GB', { weekday: 'long' });
+      dates.push({ dateValue, dateLabel, dayLabel });
     }
-  ];
 
-  const buffer = await workbook.xlsx.writeBuffer();
+    return dates;
+  }
 
-  saveAs(
-    new Blob([buffer]),
-    `Attendance_${this.selectedMonthName}.xlsx`
-  );
+  private mapStatusLabel(status?: string): string {
+    switch (status) {
+      case 'G':
+        return 'Present';
+      case 'L':
+        return 'Leave';
+      case 'WFH':
+        return 'WFH';
+      case 'DH':
+      case 'WO':
+        return 'Holiday';
+      case 'O':
+        return 'Other';
+      default:
+        return '';
+    }
+  }
 
-}
+  private normalizeAttendanceDate(dateValue: any): string {
+    if (!dateValue) {
+      return '';
+    }
 
+    const value = String(dateValue).trim();
+    const isoMatch = value.match(/^\d{4}-\d{2}-\d{2}/);
+    if (isoMatch) {
+      return isoMatch[0];
+    }
+
+    const dmyMatch = value.match(/^(\d{2})[-\/](\d{2})[-\/](\d{2,4})$/);
+    if (dmyMatch) {
+      const day = dmyMatch[1];
+      const month = dmyMatch[2];
+      let year = dmyMatch[3];
+      if (year.length === 2) {
+        year = `20${year}`;
+      }
+      return `${year}-${month}-${day}`;
+    }
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+      return '';
+    }
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
 }
