@@ -310,9 +310,9 @@ calculateStarRating(leaveCount: number): number {
 async exportToExcel() {
 
     const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet('Attendance Report');
+    const worksheet = workbook.addWorksheet();
 
-    worksheet.properties.defaultRowHeight = 25;
+    worksheet.properties.defaultRowHeight = 20;
 
     const selectedUsers =
       this.selectedMember === 'all'
@@ -324,7 +324,7 @@ async exportToExcel() {
 
     worksheet.mergeCells('A1', String.fromCharCode(67 + memberHeaders.length) + '1');
     const title = worksheet.getCell('A1');
-    title.value = 'Attendance Report';
+    // title.value = 'Attendance Report';
     title.font = {
       size: 20,
       bold: true
@@ -333,18 +333,18 @@ async exportToExcel() {
       horizontal: 'center',
       vertical: 'middle'
     };
-    worksheet.getRow(1).height = 30;
+    worksheet.getRow(1).height = 5;
 
-    worksheet.getCell('A3').value = 'Month';
-    worksheet.getCell('B3').value = this.selectedMonthName;
-    worksheet.getCell('A4').value = 'Member Filter';
-    worksheet.getCell('B4').value =
-      this.selectedMember == 'all'
-        ? 'All Members'
-        : this.memberOptions.find(x => x.value == this.selectedMember)?.label;
+    // worksheet.getCell('A3').value = 'Month';
+    // worksheet.getCell('B3').value = this.selectedMonthName;
+    // worksheet.getCell('A4').value = 'Member Filter';
+    // worksheet.getCell('B4').value =
+    //   this.selectedMember == 'all'
+    //     ? 'All Members'
+    //     : this.memberOptions.find(x => x.value == this.selectedMember)?.label;
 
-    worksheet.getCell('D3').value = 'Generated On';
-    worksheet.getCell('E3').value = new Date().toLocaleDateString('en-GB');
+    // worksheet.getCell('D3').value = 'Generated On';
+    // worksheet.getCell('E3').value = new Date().toLocaleDateString('en-GB');
 
     worksheet.getCell('A6').value = 'Date';
     worksheet.getCell('B6').value = 'Day';
@@ -383,7 +383,7 @@ async exportToExcel() {
       });
 
       const row = worksheet.addRow(rowValues);
-      row.eachCell(cell => {
+      row.eachCell((cell, colNumber) => {
         cell.alignment = { horizontal: 'center', vertical: 'middle' };
         cell.border = {
           top: { style: 'thin' },
@@ -391,6 +391,21 @@ async exportToExcel() {
           left: { style: 'thin' },
           right: { style: 'thin' }
         };
+
+        const cellValue = String(cell.value || '').trim();
+        if (cellValue === 'Holiday') {
+          cell.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'FFD9D9D9' }
+          };
+        } else if (cellValue === 'Leave') {
+          cell.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'FFBFBFBF' }
+          };
+        }
       });
     });
 
@@ -406,6 +421,44 @@ async exportToExcel() {
         ySplit: 6
       }
     ];
+
+    // Add connected summary table below the attendance table.
+    const endRow = 6 + dateRows.length;
+    const summaryStartRow = endRow + 2;
+
+    worksheet.getCell(summaryStartRow, 1).value = 'Employee Name';
+    worksheet.getCell(summaryStartRow, 2).value = 'Total Working Days';
+    worksheet.getCell(summaryStartRow, 3).value = 'Present Days';
+
+    // style header
+    [1, 2, 3].forEach(col => {
+      const cell = worksheet.getCell(summaryStartRow, col);
+      cell.font = { bold: true };
+      cell.alignment = { horizontal: 'center', vertical: 'middle' };
+    });
+
+    // For each selected user, add a row with formulas that reference the main attendance columns
+    selectedUsers.forEach((user, i) => {
+      const row = summaryStartRow + 1 + i;
+      worksheet.getCell(row, 1).value = user.name;
+
+      const memberColIndex = 3 + i; // attendance columns start at column 3
+      const colLetter = this.numberToColumn(memberColIndex);
+      const dataRange = `${colLetter}7:${colLetter}${endRow}`;
+
+      // Total working days = total rows in range minus holidays
+      const totalWorkingFormula = `=ROWS(${dataRange})-COUNTIF(${dataRange},"Holiday")`;
+      // Present days = count of 'Present'
+      const presentFormula = `=COUNTIF(${dataRange},"Present")`;
+
+      worksheet.getCell(row, 2).value = { formula: totalWorkingFormula, result: 0 };
+      worksheet.getCell(row, 3).value = { formula: presentFormula, result: 0 };
+
+      // center align formula cells
+      [2, 3].forEach(col => {
+        worksheet.getCell(row, col).alignment = { horizontal: 'center', vertical: 'middle' };
+      });
+    });
 
     const buffer = await workbook.xlsx.writeBuffer();
     saveAs(new Blob([buffer]), `Attendance_${this.selectedMonthName}.xlsx`);
@@ -476,5 +529,17 @@ async exportToExcel() {
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
+  }
+
+  // Convert numeric column index (1-based) to Excel column letter(s)
+  private numberToColumn(col: number): string {
+    let column = '';
+    let dividend = col;
+    while (dividend > 0) {
+      let modulo = (dividend - 1) % 26;
+      column = String.fromCharCode(65 + modulo) + column;
+      dividend = Math.floor((dividend - modulo) / 26);
+    }
+    return column;
   }
 }
